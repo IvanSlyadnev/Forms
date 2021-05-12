@@ -16,4 +16,9 @@ class Form extends Model
     public function leads() {
         return $this->hasMany('App\Models\Lead');
     }
+
+    public function questoins() {
+        return $this->hasMany('App\Models\Question');
+    }
+
 }

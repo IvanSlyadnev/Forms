@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
     use HasFactory;
+
+    public function lead() {
+        return $this->belongsTo('App\Model\Lead');
+    }
+
+    public function question() {
+        return $this->belongsTo('App\Models\Question');
+    }
 }
