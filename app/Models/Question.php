@@ -22,4 +22,12 @@ class Question extends Model
         return $this->hasMany(Answer::class);
     }
 
+    public function createQuestion($form, $data) {
+        return $form->questions()->create($data);
+    }
+
+    public function updateQuestion($form, $data) {
+        return $form->questions()->where('id', $this->id)->update($data);
+    }
+
 }

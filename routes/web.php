@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\QuestionController;
+use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,5 +20,12 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+
+Route::middleware('auth')->group(function () {
+    Route::resource('forms', FormController::class);
+    Route::resource('forms.questions', QuestionController::class)->shallow();
+});
+
+Route::get('/f', [FormController::class, 'index'])->name('f');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

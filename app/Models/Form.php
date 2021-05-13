@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use http\Env\Request;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,8 +23,22 @@ class Form extends Model
         return $this->hasMany(Lead::class);
     }
 
-    public function questoins() {
+    public function questions() {
         return $this->hasMany(Question::class);
     }
 
+
+    public function createForm($user, $data) {
+        return $user->forms()->create($data);
+    }
+
+    public function updateForm($user, $data) {
+        return $user->forms()->where('id', $this->id)->update($data);
+    }
+
+
+    public function deleteForm() {
+        $this->questions()->delete();
+        $this->delete();
+    }
 }
