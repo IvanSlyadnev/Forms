@@ -30,7 +30,6 @@ class FormController extends Controller
      */
     public function create(Form $form)
     {
-
         return view('forms/form', [
             'form' => $form
         ]);

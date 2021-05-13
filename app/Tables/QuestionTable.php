@@ -5,7 +5,8 @@ namespace App\Tables;
 use App\Models\Question;
 use Okipa\LaravelTable\Abstracts\AbstractTable;
 use Okipa\LaravelTable\Table;
-
+use Illuminate\Database\Eloquent\Builder;
+//use PhpParser\Builder;
 class QuestionTable extends AbstractTable
 {
     /**
@@ -19,6 +20,8 @@ class QuestionTable extends AbstractTable
     public function __construct($form) {
         $this->form = $form;
     }
+
+
     protected function table(): Table
     {
         return (new Table())->model(Question::class)
@@ -28,6 +31,10 @@ class QuestionTable extends AbstractTable
                 'edit'    => ['name' => 'questions.edit'],
                 'destroy' => ['name' => 'questions.destroy'],
             ])
+            ->activateRowsNumberDefinition(false)
+            ->query(function (Builder $query) {
+                $query->where('form_id', $this->form->id);
+            })
             ->destroyConfirmationHtmlAttributes(fn(Question $question) => [
                 'data-confirm' => __('Are you sure you want to delete the entry :entry?', [
                     'entry' => $question->database_attribute,

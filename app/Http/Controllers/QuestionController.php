@@ -6,6 +6,7 @@ use App\Http\Requests\QuestionRequest;
 use App\Models\Form;
 use App\Models\Question;
 use App\Tables\QuestionTable;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -20,7 +21,6 @@ class QuestionController extends Controller
         $table = (new QuestionTable($form))->setup();
         $this->authorize('viewAnyQuestion', $form);
         return view('questions/index', [
-            'questions' => $form->questions,
             'form' => $form,
             'table' => $table
         ]);
@@ -52,8 +52,6 @@ class QuestionController extends Controller
         $form->questions()->create($request->only($question->getFillable()));
         return redirect()->route('forms.questions.index', $form->id);
     }
-
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -79,7 +77,6 @@ class QuestionController extends Controller
         $this->authorize('update', $question);
         $question->update($request->only($question->getFillable()));
         return redirect()->route('forms.questions.index', $question->form)->with('success', 'Вопрос успешно изменен');
-
     }
 
     /**
