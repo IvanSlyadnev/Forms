@@ -95,7 +95,7 @@ class FormController extends Controller
      */
     public function destroy(Form $form)
     {
-        //$this->authorize('delete', $form);
+        $this->authorize('delete', $form);
         $form->deleteForm();
         return redirect()->route('forms.index')->with('success', 'Форма успешно удалена');
     }

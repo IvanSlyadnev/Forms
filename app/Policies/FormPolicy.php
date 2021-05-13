@@ -18,7 +18,7 @@ class FormPolicy
      */
     public function viewAny(User $user)
     {
-        //
+
     }
 
     /**
@@ -65,7 +65,7 @@ class FormPolicy
      */
     public function delete(User $user, Form $form)
     {
-        //
+        return $user->id == $form->user->id;
     }
 
     /**
