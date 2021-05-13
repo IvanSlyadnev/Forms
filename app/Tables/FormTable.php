@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Tables;
+
+use App\Models\Form;
+use App\Models\User;
+use Okipa\LaravelTable\Abstracts\AbstractTable;
+use Okipa\LaravelTable\Table;
+
+class FormTable extends AbstractTable
+{
+    /**
+     * Configure the table itself.
+     *
+     * @return \Okipa\LaravelTable\Table
+     * @throws \ErrorException
+     */
+    protected function table(): Table
+    {
+        return (new Table())->model(Form::class)
+            ->routes([
+                'index'   => ['name' => 'forms.index'],
+                'create'  => ['name' => 'forms.create'],
+                'edit'    => ['name' => 'forms.edit'],
+                'destroy' => ['name' => 'forms.destroy'],
+                'show'    => ['name'=> 'forms.show']
+            ]);
+    }
+    /**
+     * Configure the table columns.
+     *
+     * @param \Okipa\LaravelTable\Table $table
+     *
+     * @throws \ErrorException
+     */
+    protected function columns(Table $table): void
+    {
+        $table->column()->html(function (Form $form) {
+            $url = route('forms.questions.index', $form->id);
+            return "<a href='{$url}'>{$form->name}</a>";
+        })->title('Форма');
+        $table->column()->value(function (Form $form) {
+            return $form->questions()->count();
+        })->title('кол-во вопросов');
+    }
+    /**
+     * Configure the table result lines.
+     *
+     * @param \Okipa\LaravelTable\Table $table
+     */
+    protected function resultLines(Table $table): void
+    {
+        //
+    }
+}

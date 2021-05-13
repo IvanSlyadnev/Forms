@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Auth::routes();
 
@@ -25,7 +22,5 @@ Route::middleware('auth')->group(function () {
     Route::resource('forms', FormController::class);
     Route::resource('forms.questions', QuestionController::class)->shallow();
 });
-
-Route::get('/f', [FormController::class, 'index'])->name('f');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

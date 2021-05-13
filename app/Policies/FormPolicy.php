@@ -65,14 +65,6 @@ class FormPolicy
     }
 
     /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Form  $form
-     * @return mixed
-     */
-
-    /**
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
@@ -82,5 +74,13 @@ class FormPolicy
     public function forceDelete(User $user, Form $form)
     {
         //
+    }
+
+    public function viewAnyQuestion(User  $user, Form $form) {
+        return $user->id == $form->user_id;
+    }
+
+    public function createQuestion(User  $user, Form $form) {
+        return $user->id == $form->user_id;
     }
 }

@@ -75,7 +75,7 @@ class QuestionPolicy
      * @param  \App\Models\Question  $question
      * @return mixed
      */
-    public function restore(User $user, Question $question)
+    public function store(User $user, Question $question)
     {
         return $user->id == $question->form->user_id;
     }

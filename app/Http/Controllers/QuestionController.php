@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\QuestionRequest;
 use App\Models\Form;
 use App\Models\Question;
+use App\Tables\QuestionTable;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -16,9 +17,12 @@ class QuestionController extends Controller
      */
     public function index(Form $form)
     {
+        $table = (new QuestionTable($form))->setup();
+        $this->authorize('viewAnyQuestion', $form);
         return view('questions/index', [
             'questions' => $form->questions,
-            'form' => $form
+            'form' => $form,
+            'table' => $table
         ]);
     }
 
@@ -29,6 +33,7 @@ class QuestionController extends Controller
      */
     public function create(Form $form, Question  $question)
     {
+        $this->authorize('createQuestion', $form);
         return view('questions/form', [
             'question' => $question,
             'form' => $form
@@ -43,10 +48,9 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request, Question $question, Form $form)
     {
-        $this->authorize('store', $question);
+        $this->authorize('createQuestion', $form);
         $form->questions()->create($request->only($question->getFillable()));
         return redirect()->route('forms.questions.index', $form->id);
-
     }
 
 

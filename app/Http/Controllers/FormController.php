@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FormForRequest;
 use App\Models\Form;
+use App\Tables\FormTable;
 use Illuminate\Http\Request;
 
 class FormController extends Controller
@@ -15,8 +16,10 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
+        $table = (new FormTable())->setup();
         return view('forms/index', [
-            'forms' => $request->user()->forms
+            'forms' => $request->user()->forms,
+            'table' => $table
         ]);
     }
 
@@ -67,6 +70,7 @@ class FormController extends Controller
      */
     public function edit(Form $form)
     {
+        $this->authorize('update', $form);
         return view('forms/form', [
             'form' => $form
         ]);
@@ -84,7 +88,6 @@ class FormController extends Controller
         $this->authorize('update', $form);
         $form->update($request->only($form->getFillable()));
         return redirect()->route('forms.index')->with('success', 'Форма успешно изменена');
-
     }
 
     /**

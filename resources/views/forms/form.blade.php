@@ -2,27 +2,18 @@
 
 @section('content')
     <div class="container">
-        @if ($form->id == null)
-            <h1>Создать форму</h1>
-            <?php
-                $route = 'forms.store';
-                $method = 'post';
-                $action = 'Создать';
-            ?>
+        <h1>{{$form->id ? 'Редактирование' : 'Создание'}} формы</h1>
+        @if ($form->id)
+            {!! Form::model($form, ['method' => 'put', 'route'=> ['forms.update', $form->id]]) !!}
         @else
-            <h1>Редактировать форму</h1>
-            <?php
-                $route = 'forms.update';
-                $method = 'put';
-                $action = 'Редактировать';
-            ?>
+            {!! Form::model($form, ['method' => 'post', 'route'=> ['forms.store']]) !!}
         @endif
-        {!! Form::model($form, ['method' => $method, 'route'=> [$route, $form->id]]) !!}
-        <label for="">Введите название вашей формы</label>
+
+        <label>Введите название вашей формы</label>
         <br>
         {!! Form::text('name', null , ['class' => 'form-control']) !!}
         <br>
-        {!! Form::submit($action, ['class' => 'btn btn-success']) !!}
+        {!! Form::submit($form->id ? 'Редактировать' : 'Создать', ['class' => 'btn btn-success']) !!}
         {!! Form::close() !!}
     </div>
 @endsection
