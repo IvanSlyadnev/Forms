@@ -9,11 +9,17 @@ class Answer extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'question_id',
+        'lead_id'
+    ];
+
+
     public function lead() {
-        return $this->belongsTo('App\Model\Lead');
+        return $this->belongsTo(Lead::class);
     }
 
     public function question() {
-        return $this->belongsTo('App\Models\Question');
+        return $this->belongsTo(Question::class);
     }
 }

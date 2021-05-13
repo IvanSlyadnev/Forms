@@ -9,16 +9,21 @@ class Form extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'user_id'
+    ];
+
     public function user() {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo(User::class);
     }
 
     public function leads() {
-        return $this->hasMany('App\Models\Lead');
+        return $this->hasMany(Lead::class);
     }
 
     public function questoins() {
-        return $this->hasMany('App\Models\Question');
+        return $this->hasMany(Question::class);
     }
 
 }

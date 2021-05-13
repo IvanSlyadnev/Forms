@@ -9,11 +9,15 @@ class Lead extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'form_id'
+    ];
+
     public function form() {
-        return $this->belongsTo('App\Models\Form');
+        return $this->belongsTo(Form::class);
     }
 
     public function answers() {
-        return $this->hasMany('App\Models\Answer');
+        return $this->hasMany(Answer::class);
     }
 }

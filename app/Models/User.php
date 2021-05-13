@@ -12,7 +12,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public function forms () {
-        return $this->hasMany('App\Models\Form');
+        return $this->hasMany(Form::class);
     }
 
     /**
