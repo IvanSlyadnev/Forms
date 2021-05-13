@@ -27,10 +27,10 @@ class QuestionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Form $form)
+    public function create(Form $form, Question  $question)
     {
-        return view('questions/create', [
-            'question' => new Question(),
+        return view('questions/form', [
+            'question' => $question,
             'form' => $form
         ]);
     }
@@ -43,21 +43,12 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request, Question $question, Form $form)
     {
-        if($question->createQuestion($form, $request->only($question->getFillable()))) {
-            return redirect()->route('forms.questions.index', $form->id);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
+        $this->authorize('store', $question);
+        $form->questions()->create($request->only($question->getFillable()));
+        return redirect()->route('forms.questions.index', $form->id);
 
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -67,7 +58,7 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        return view('/questions/edit', [
+        return view('/questions/form', [
             'question' => $question
         ]);
     }
@@ -81,9 +72,10 @@ class QuestionController extends Controller
      */
     public function update(QuestionRequest $request, Question $question)
     {
-        if ($question->updateQuestion($question->form, $request->only($question->getFillable()))) {
-            return redirect()->route('forms.questions.index', $question->form)->with('success', 'Вопрос успешно изменен');
-        } else abort(403);
+        $this->authorize('update', $question);
+        $question->update($request->only($question->getFillable()));
+        return redirect()->route('forms.questions.index', $question->form)->with('success', 'Вопрос успешно изменен');
+
     }
 
     /**

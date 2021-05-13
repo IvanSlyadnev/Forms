@@ -30,6 +30,7 @@
 <body class="d-flex flex-column h-100">
 @include('header')
 <main class="py-4">
+    @include('mis.mistake')
     @yield('content')
 </main>
 </body>

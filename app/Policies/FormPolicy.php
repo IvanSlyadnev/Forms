@@ -39,10 +39,6 @@ class FormPolicy
      * @param  \App\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
-    {
-        //
-    }
 
     /**
      * Determine whether the user can update the model.
@@ -53,7 +49,7 @@ class FormPolicy
      */
     public function update(User $user, Form $form)
     {
-        //
+        return $user->id == $form->user->id;
     }
 
     /**
@@ -75,10 +71,6 @@ class FormPolicy
      * @param  \App\Models\Form  $form
      * @return mixed
      */
-    public function restore(User $user, Form $form)
-    {
-        //
-    }
 
     /**
      * Determine whether the user can permanently delete the model.

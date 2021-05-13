@@ -53,7 +53,7 @@ class QuestionPolicy
      */
     public function update(User $user, Question $question)
     {
-        //
+        return $user->id == $question->form->user_id;
     }
 
     /**
@@ -77,7 +77,7 @@ class QuestionPolicy
      */
     public function restore(User $user, Question $question)
     {
-        //
+        return $user->id == $question->form->user_id;
     }
 
     /**

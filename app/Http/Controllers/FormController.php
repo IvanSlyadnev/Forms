@@ -27,7 +27,8 @@ class FormController extends Controller
      */
     public function create(Form $form)
     {
-        return view('forms/create', [
+
+        return view('forms/form', [
             'form' => $form
         ]);
     }
@@ -41,9 +42,8 @@ class FormController extends Controller
 
     public function store(FormForRequest $request, Form $form)
     {
-        if ($form->createForm($request->user(), $request->only($form->getFillable()))) {
-                return redirect()->route('forms.index')->with('success', 'Форма успешно создана');
-            } else abort(403);
+        $request->user()->forms()->create($request->only($form->getFillable()));
+        return redirect()->route('forms.index')->with('success', 'Форма успешно создана');
     }
 
     /**
@@ -67,8 +67,7 @@ class FormController extends Controller
      */
     public function edit(Form $form)
     {
-
-        return view('forms/edit', [
+        return view('forms/form', [
             'form' => $form
         ]);
     }
@@ -82,9 +81,10 @@ class FormController extends Controller
      */
     public function update(FormForRequest $request, Form $form)
     {
-        if ($form->updateForm($request->user(), $request->only($form->getFillable()))) {
-            return redirect()->route('forms.index')->with('success', 'Форма успешно изменена');
-        } else abort(403);
+        $this->authorize('update', $form);
+        $form->update($request->only($form->getFillable()));
+        return redirect()->route('forms.index')->with('success', 'Форма успешно изменена');
+
     }
 
     /**
@@ -96,7 +96,7 @@ class FormController extends Controller
     public function destroy(Form $form)
     {
         $this->authorize('delete', $form);
-        $form->deleteForm();
+        $form->delete();
         return redirect()->route('forms.index')->with('success', 'Форма успешно удалена');
     }
 }

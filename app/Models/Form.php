@@ -28,17 +28,5 @@ class Form extends Model
     }
 
 
-    public function createForm($user, $data) {
-        return $user->forms()->create($data);
-    }
 
-    public function updateForm($user, $data) {
-        return $user->forms()->where('id', $this->id)->update($data);
-    }
-
-
-    public function deleteForm() {
-        $this->questions()->delete();
-        $this->delete();
-    }
 }
