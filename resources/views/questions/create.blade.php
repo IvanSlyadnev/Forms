@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        @include ('mis.mistake')
         <h1>Создание Вопроса</h1>
         {!! Form::open(['method' => 'post', 'route'=> ['forms.questions.store', $form->id], 'class' => 'form-line']) !!}
         <label for="">Введите название вышего вопроса</label>

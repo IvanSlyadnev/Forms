@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FormForRequest;
 use App\Models\Form;
 use Illuminate\Http\Request;
 
@@ -37,11 +38,12 @@ class FormController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Form $form)
+
+    public function store(FormForRequest $request, Form $form)
     {
         if ($form->createForm($request->user(), $request->only($form->getFillable()))) {
-            return redirect()->route('forms.index')->with('success', 'Форма успешно создана');
-        } else abort(403);
+                return redirect()->route('forms.index')->with('success', 'Форма успешно создана');
+            } else abort(403);
     }
 
     /**
@@ -78,7 +80,7 @@ class FormController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Form $form)
+    public function update(FormForRequest $request, Form $form)
     {
         if ($form->updateForm($request->user(), $request->only($form->getFillable()))) {
             return redirect()->route('forms.index')->with('success', 'Форма успешно изменена');

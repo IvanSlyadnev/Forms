@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        @include ('mis.mistake')
         <h1>Создание форм</h1>
         {!! Form::open(['method' => 'post', 'route'=> ['forms.store'], 'class' => 'form-line']) !!}
         <label for="">Введите название вашей формы</label>

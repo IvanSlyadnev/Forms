@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        @include ('mis.mistake')
         <h1>Редактирование вопроса</h1>
         {!! Form::open(['method' => 'put', 'route'=> ['questions.update', $question->id], 'class' => 'form-line']) !!}
         <label for="">Введите название выешго вопроса</label>
