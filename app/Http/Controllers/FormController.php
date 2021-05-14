@@ -16,9 +16,8 @@ class FormController extends Controller
      */
     public function index(Request $request)
     {
-        $table = (new FormTable())->setup();
+        $table = (new FormTable($request->user()))->setup();
         return view('forms/index', [
-            'forms' => $request->user()->forms,
             'table' => $table
         ]);
     }

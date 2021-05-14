@@ -6,6 +6,8 @@ use App\Models\Form;
 use App\Models\User;
 use Okipa\LaravelTable\Abstracts\AbstractTable;
 use Okipa\LaravelTable\Table;
+use Illuminate\Database\Eloquent\Builder;
+//use PhpParser\Builder;
 
 class FormTable extends AbstractTable
 {
@@ -15,6 +17,13 @@ class FormTable extends AbstractTable
      * @return \Okipa\LaravelTable\Table
      * @throws \ErrorException
      */
+    protected $user;
+
+    public function __construct($user)
+    {
+        $this->user = $user;
+    }
+
     protected function table(): Table
     {
         return (new Table())->model(Form::class)
@@ -24,7 +33,9 @@ class FormTable extends AbstractTable
                 'edit'    => ['name' => 'forms.edit'],
                 'destroy' => ['name' => 'forms.destroy'],
                 'show'    => ['name'=> 'forms.show']
-            ]);
+            ])->query(function (Builder $query) {
+                $query->where('user_id', $this->user->id);
+            });
     }
     /**
      * Configure the table columns.

@@ -21,7 +21,6 @@ class QuestionTable extends AbstractTable
         $this->form = $form;
     }
 
-
     protected function table(): Table
     {
         return (new Table())->model(Question::class)
