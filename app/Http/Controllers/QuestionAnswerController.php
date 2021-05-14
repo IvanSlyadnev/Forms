@@ -12,6 +12,6 @@ class QuestionAnswerController extends Controller
         foreach ($request->input()['question'] as $question_id => $question) {
             $lead->answers()->create(['value'=> $question, 'question_id' => $question_id]);
         }
-        return redirect()->route('forms.show', $form->id)->with('success', 'форма успешно сохранена');
+        return redirect()->route('forms.fill', $form->id)->with('success', 'форма успешно сохранена');
     }
 }

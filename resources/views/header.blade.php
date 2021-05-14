@@ -1,6 +1,7 @@
 <?php
 use App\Models\Form;
-if (Auth::user() != null) $forms = Form::where('user_id', Auth::user()->id)->get();
+$forms = Form::all();
+
 ?>
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
@@ -24,7 +25,7 @@ if (Auth::user() != null) $forms = Form::where('user_id', Auth::user()->id)->get
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             @foreach($forms as $form)
-                                <a class="dropdown-item" href="{{route('forms.show', $form->id)}}">
+                                <a class="dropdown-item" href="{{route('forms.fill', $form->id)}}">
                                     {{$form->name}}</a>
                             @endforeach
 
