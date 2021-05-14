@@ -2,7 +2,9 @@
 
 
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\QuestionAnswerController;
 use App\Http\Controllers\QuestionController;
+
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -22,5 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('forms', FormController::class);
     Route::resource('forms.questions', QuestionController::class)->shallow();
 });
+
+Route::post('forms/question/answer/{form}', [QuestionAnswerController::class, 'foo'])->name('forms.question.answer');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

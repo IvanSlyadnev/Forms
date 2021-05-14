@@ -1,3 +1,7 @@
+<?php
+use App\Models\Form;
+if (Auth::user() != null) $forms = Form::where('user_id', Auth::user()->id)->get();
+?>
 <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{route('home')}}">
@@ -11,6 +15,21 @@
                 @else
                 <li>
                     <a href="{{route('forms.index')}}"><button>Посмотреть формы</button></a>
+                </li>
+                <li>
+                    <div class="dropdown">
+                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Формы
+                        </button>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            @foreach($forms as $form)
+                                <a class="dropdown-item" href="{{route('forms.show', $form->id)}}">
+                                    {{$form->name}}</a>
+                            @endforeach
+
+                        </div>
+                    </div>
                 </li>
                 @endif
             </ul>
