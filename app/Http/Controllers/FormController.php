@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FormForRequest;
 use App\Models\Form;
+use App\Models\Question;
 use App\Tables\FormTable;
 use App\Tables\LeadTable;
 use Illuminate\Http\Request;
@@ -59,13 +60,14 @@ class FormController extends Controller
         $table = (new LeadTable($form))->setup();
         return view('forms/show', [
             'table' => $table,
-            'form' => $form
+            'form' => $form,
         ]);
     }
 
     public function fill(Form $form) {
         return view('forms/fill', [
-            'form' => $form
+            'form' => $form,
+            'question' => new Question()
         ]);
     }
 

@@ -25,7 +25,7 @@ class LeadTable extends AbstractTable
     {
         return (new Table())->model(Lead::class)
             ->routes([
-                'index' => ['name' => 'forms.leads.index', 'params' => ['form' => $this->form->id]],
+                'index' => ['name' => 'forms.show', 'params' => ['form' => $this->form->id]],
                 'show'  => ['name' => 'leads.show']
             ])
             ->destroyConfirmationHtmlAttributes(fn(Lead $lead) => [

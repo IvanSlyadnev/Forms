@@ -3,19 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use App\Models\Question;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index($form)
-    {
-        return redirect()->route('forms.show', $form);
-    }
     /**
      * Display the specified resource.
      *
@@ -26,7 +18,8 @@ class LeadController extends Controller
     {
         return view('leads/show', [
             'form' => $lead->form,
-            'answers' => $lead->answers
+            'answers' => $lead->answers,
+            'question' => new Question()
         ]);
     }
 

@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
         ->shallow();
 });
 
-Route::post('forms/question/answer/{form}', [QuestionAnswerController::class, 'foo'])->name('forms.question.answer');
+Route::post('forms/question/answer/{form}', [QuestionAnswerController::class, 'fillForm'])->name('forms.question.answer');
 
 Route::get('forms/fill/{form}', [FormController::class, 'fill'])->name('forms.fill');
 
