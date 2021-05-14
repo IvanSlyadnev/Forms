@@ -24,7 +24,8 @@ class FillFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'question' => 'required'
+            'question' => 'required|array',
+            'question.*' => 'required'
         ];
     }
 

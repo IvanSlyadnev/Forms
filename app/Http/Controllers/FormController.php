@@ -57,6 +57,7 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
+        $this->authorize('viewAny', $form);
         $table = (new LeadTable($form))->setup();
         return view('forms/show', [
             'table' => $table,
