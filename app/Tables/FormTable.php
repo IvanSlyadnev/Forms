@@ -35,7 +35,11 @@ class FormTable extends AbstractTable
                 'show'    => ['name'=> 'forms.show']
             ])->query(function (Builder $query) {
                 $query->where('user_id', $this->user->id);
-            });
+            })->destroyConfirmationHtmlAttributes(fn(Form $form) => [
+                'data-confirm' => __('Вы уверены что хотите удалить форму :form?  ', [
+                    'form' => $form->name,
+                ]),
+            ]);
     }
     /**
      * Configure the table columns.

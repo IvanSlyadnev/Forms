@@ -16,11 +16,11 @@ class LeadController extends Controller
      */
     public function show(Lead $lead)
     {
-        $this->authorize('viewAny', $lead);
+        $this->authorize('view', $lead);
         return view('leads/show', [
             'form' => $lead->form,
             'answers' => $lead->answers,
-            'question' => new Question()
+            'lead' => $lead
         ]);
     }
 

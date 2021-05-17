@@ -6,6 +6,7 @@ use App\Models\Form;
 use App\Models\Lead;
 use Okipa\LaravelTable\Abstracts\AbstractTable;
 use Okipa\LaravelTable\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class LeadTable extends AbstractTable
 {
@@ -28,6 +29,9 @@ class LeadTable extends AbstractTable
                 'index' => ['name' => 'forms.show', 'params' => ['form' => $this->form->id]],
                 'show'  => ['name' => 'leads.show']
             ])
+            ->query(function (Builder $query) {
+                $query->where('form_id', $this->form->id);
+            })
             ->destroyConfirmationHtmlAttributes(fn(Lead $lead) => [
                 'data-confirm' => __('Are you sure you want to delete the entry :entry?', [
                     'entry' => $lead->database_attribute,
@@ -46,7 +50,7 @@ class LeadTable extends AbstractTable
     {
         $table->column()->html(function (Lead $lead) {
             $url = route('leads.show', $lead->id);
-            return "<a href='{$url}'>{$lead->id}</a>";
+            return "<a href='{$url}'>{$lead->email}</a>";
         });
     }
 

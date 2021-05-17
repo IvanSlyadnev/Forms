@@ -12,7 +12,8 @@ class Form extends Model
 
     protected $fillable = [
         'name',
-        'user_id'
+        'user_id',
+        'is_public'
     ];
 
     public function user() {

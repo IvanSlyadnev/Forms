@@ -16,9 +16,9 @@ class FormPolicy
      * @param  \App\Models\User  $user
      * @return mixed
      */
-    public function viewAny(User $user, Form $form)
+    public function viewAny(User $user)
     {
-        return $user->id == $form->user->id;
+
     }
 
     /**
@@ -30,7 +30,7 @@ class FormPolicy
      */
     public function view(User $user, Form $form)
     {
-        //
+        return $user->id == $form->user->id;
     }
 
     /**
@@ -82,5 +82,10 @@ class FormPolicy
 
     public function createQuestion(User  $user, Form $form) {
         return $user->id == $form->user_id;
+    }
+
+    public function fill(?User $user, Form $form) {
+        if (!$form->is_public && $user == null) return false;
+        return true;
     }
 }

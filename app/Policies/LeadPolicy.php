@@ -16,9 +16,9 @@ class LeadPolicy
      * @param  \App\Models\User  $user
      * @return mixed
      */
-    public function viewAny(User $user, Lead $lead)
+    public function viewAny(User $user)
     {
-        return $user->id == $lead->form->user->id;
+
     }
 
     /**
@@ -30,7 +30,7 @@ class LeadPolicy
      */
     public function view(User $user, Lead $lead)
     {
-        //
+        return $user->id == $lead->form->user->id;
     }
 
     /**

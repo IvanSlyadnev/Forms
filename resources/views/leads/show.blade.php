@@ -3,17 +3,14 @@
 
 @section('content')
     <div class="container">
-
-    {!! Form::model($question, ['method' =>'post' ,
-                'route'=>['forms.question.answer', $form->id]]) !!}
         @if (count($answers))
+            {!! Form::label('', 'email') !!}
+            {!! Form::text('', $lead->email ,['class' => 'form-control', 'disabled' => true]) !!}
             @foreach($form->questions as $key => $question)
-                {!! Form::label('question', $question->question) !!}
+                {!! Form::label('question'.$question->id, $question->question) !!}
                 <br>
-                {!! Form::text('question', $answers[$key]->value , ['class' => 'form-control', 'name'=> 'question'.'['.$question->id.']']) !!}
+                {!! Form::text('question['.$question->id.']', $answers[$key]->value , ['class' => 'form-control', 'disabled' => true, 'id' => 'question'.$question->id]) !!}
             @endforeach
         @endif
-
-        {!! Form::close() !!}
     </div>
 @endsection

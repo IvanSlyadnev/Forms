@@ -111,6 +111,7 @@
       <path value="$PROJECT_DIR$/vendor/laravelcollective/html" />
       <path value="$PROJECT_DIR$/vendor/okipa/laravel-table" />
       <path value="$PROJECT_DIR$/vendor/okipa/laravel-html-helper" />
+      <path value="$PROJECT_DIR$/vendor/laravel-notification-channels/telegram" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />

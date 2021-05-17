@@ -25,13 +25,15 @@ class FillFormRequest extends FormRequest
     {
         return [
             'question' => 'required|array',
-            'question.*' => 'required'
+            'question.*' => 'required',
+            'email' => 'required'
         ];
     }
 
     public function messages() {
         return [
-            'question.required' => 'Введите ответы на вопросы'
+            'question.required' => 'Введите ответы на вопросы',
+            'email.required' => 'Введите email'
         ];
     }
 }

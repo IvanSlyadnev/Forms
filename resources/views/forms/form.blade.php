@@ -12,6 +12,9 @@
         <label>Введите название вашей формы</label>
         <br>
         {!! Form::text('name', null , ['class' => 'form-control']) !!}
+        {!! Form::label('form'.$form->id, 'Сделать форму публичной') !!}
+        {!! Form::hidden('is_public', 0) !!}
+        {!! Form::checkbox('is_public', true) !!}
         <br>
         {!! Form::submit($form->id ? 'Редактировать' : 'Создать', ['class' => 'btn btn-success']) !!}
         {!! Form::close() !!}

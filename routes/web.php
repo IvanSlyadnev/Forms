@@ -28,12 +28,8 @@ Route::middleware('auth')->group(function () {
         ->only('index','show')
         ->shallow();
 });
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::post('forms/question/answer/{form}', [QuestionAnswerController::class, 'fillForm'])->name('forms.question.answer');
 
 Route::get('forms/fill/{form}', [FormController::class, 'fill'])->name('forms.fill');
-
-
-
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

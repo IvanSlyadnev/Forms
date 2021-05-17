@@ -57,7 +57,7 @@ class FormController extends Controller
      */
     public function show(Form $form)
     {
-        $this->authorize('viewAny', $form);
+        $this->authorize('view', $form);
         $table = (new LeadTable($form))->setup();
         return view('forms/show', [
             'table' => $table,
@@ -65,10 +65,11 @@ class FormController extends Controller
         ]);
     }
 
-    public function fill(Form $form) {
+    public function fill(Request $request, Form $form) {
+        $this->authorize('fill', $form);
         return view('forms/fill', [
             'form' => $form,
-            'question' => new Question()
+            'email' => optional($request->user())->email
         ]);
     }
 
@@ -89,7 +90,7 @@ class FormController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate  \Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

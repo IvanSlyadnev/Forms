@@ -18,8 +18,8 @@ class QuestionController extends Controller
      */
     public function index(Form $form)
     {
-        $table = (new QuestionTable($form))->setup();
         $this->authorize('viewAnyQuestion', $form);
+        $table = (new QuestionTable($form))->setup();
         return view('questions/index', [
             'form' => $form,
             'table' => $table

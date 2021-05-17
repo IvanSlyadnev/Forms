@@ -5,14 +5,16 @@
         <h1>Прохождение формы {{$form->name}}</h1>
         @if (count($form->questions))
 
-            {!! Form::model($question, ['method' =>'post' ,
+            {!! Form::open(['method' =>'post' ,
                 'route'=>['forms.question.answer', $form->id]]) !!}
-            @foreach($form->questions as $question)
-                {!! Form::label('question', $question->question) !!}
-                {!! Form::text('question', '', ['class' => 'form-control', 'name'=> 'question'.'['.$question->id.']']) !!}
-
-            @endforeach
-            {!! Form::submit('Ответить', ['class' => 'btn btn-success']) !!}
+                {!! Form::label('email', 'Ваш email') !!}
+                <br>
+                {!! Form::text('email', $email ,['class' => 'form-control']) !!}
+                @foreach($form->questions as $question)
+                    {!! Form::label('question'.$question->id, $question->question) !!}
+                    {!! Form::text('question['.$question->id.']', '', ['class' => 'form-control', 'id' => 'question'.$question->id]) !!}
+                @endforeach
+                {!! Form::submit('Ответить', ['class' => 'btn btn-success']) !!}
             {!! Form::close() !!}
         @else
             <h1>На это форме нет вопросов</h1>

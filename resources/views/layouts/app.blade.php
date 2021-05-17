@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Госетвая книга</title>
+    <title>Forms</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -35,6 +35,9 @@
     @include('success.success')
     @yield('content')
 </main>
+<script type="text/javascript">
+
+</script>
 </body>
 </html>
 
