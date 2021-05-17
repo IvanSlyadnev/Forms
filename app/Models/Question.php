@@ -12,7 +12,8 @@ class Question extends Model
     protected $fillable = [
         'question',
         'form_id',
-        'type'
+        'type',
+        'values'
     ];
 
     public function form() {
@@ -25,6 +26,21 @@ class Question extends Model
 
     public function updateQuestion($form, $data) {
         return $form->questions()->where('id', $this->id)->update($data);
+    }
+
+    public function getValuesArrayAttribute () {
+
+        $collection = collect(
+            explode(',', $this->values)
+        );
+        
+        $keyed = $collection->mapWithKeys(function ($item) {
+            return [$item => $item];
+        });
+
+        return $keyed->all();
+
+    
     }
 
 }

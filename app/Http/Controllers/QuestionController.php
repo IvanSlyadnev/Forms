@@ -6,6 +6,7 @@ use App\Http\Requests\QuestionRequest;
 use App\Models\Form;
 use App\Models\Question;
 use App\Tables\QuestionTable;
+use \App\Enums\QuestionType;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,8 @@ class QuestionController extends Controller
         $this->authorize('createQuestion', $form);
         return view('questions/form', [
             'question' => $question,
-            'form' => $form
+            'form' => $form,
+            'types' =>  QuestionType::asSelectArray()
         ]);
     }
 
@@ -67,7 +69,7 @@ class QuestionController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
+     *f
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response

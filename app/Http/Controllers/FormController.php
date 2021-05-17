@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\QuestionType;
 use App\Http\Requests\FormForRequest;
 use App\Models\Form;
 use App\Models\Question;
@@ -69,7 +70,7 @@ class FormController extends Controller
         $this->authorize('fill', $form);
         return view('forms/fill', [
             'form' => $form,
-            'email' => optional($request->user())->email
+            'email' => optional($request->user())->email,
         ]);
     }
 

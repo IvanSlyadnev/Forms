@@ -1,15 +1,31 @@
 @extends('layouts.app')
 
-
 @section('content')
     <div class="container">
         @if (count($answers))
             {!! Form::label('', 'email') !!}
+
             {!! Form::text('', $lead->email ,['class' => 'form-control', 'disabled' => true]) !!}
-            @foreach($form->questions as $key => $question)
-                {!! Form::label('question'.$question->id, $question->question) !!}
+            @foreach($answers as $answer)
+                {!! Form::label('question'.$answer->question->id, $answer->question->question) !!}
                 <br>
-                {!! Form::text('question['.$question->id.']', $answers[$key]->value , ['class' => 'form-control', 'disabled' => true, 'id' => 'question'.$question->id]) !!}
+                @switch($answer->question->type)
+                    @case(\App\Enums\QuestionType::input)
+                        {!! Form::text('question['.$answer->question->id.']', $answer->value , ['class' => 'form-control', 'disabled' => true, 'id' => 'question'.$answer->question->id]) !!}
+                        @break;
+                    @case(\App\Enums\QuestionType::textarea)
+                        {!! Form::textarea('question['.$answer->question->id.']', $answer->value , ['class' => 'form-control', 'disabled' => true, 'id' => 'question'.$answer->question->id]) !!}
+                        @break;
+                    @case(\App\Enums\QuestionType::checkbox)
+                        {!! Form::checkbox('question['.$answer->question->id.']', $answer->value, $answer->value, ['disabled' => true]) !!}
+                        @break;
+                    @case(\App\Enums\QuestionType::radio)
+                        @foreach($answer->question->values_array as $value)
+                            {!! Form::label('question['.$answer->question->id.']', $value) !!}
+                            {!! Form::radio('question['.$answer->question->id.']', $value, true, ['disabled' => true]) !!}
+                        @endforeach
+                        @break;
+                @endswitch
             @endforeach
         @endif
     </div>

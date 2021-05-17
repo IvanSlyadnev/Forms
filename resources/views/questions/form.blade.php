@@ -10,11 +10,14 @@
         @endif
         {!! Form::label('question'.$question->id, 'Введите название вашего вопроса') !!}
         <br>
-        {!! Form::select('type', ['input'=> 'инпут', 'text' => 'текстовый']) !!}
+        {!! Form::select('type', $types) !!}
         <br>
         {!! Form::text('question', null , ['class' => 'form-control']) !!}
         <br>
-
+        {!! Form::label('question'.$question->id, 'поле для селекта или радио ') !!}
+        <br>
+        {!! Form::text('values', '', ['class' => 'form-control']) !!}
+        <br>
         {!! Form::submit($question->id ? 'Редактировать' : 'Создать', ['class' => 'btn btn-success']) !!}
         {!! Form::close() !!}
     </div>
