@@ -44,6 +44,7 @@ class FormOwnerNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+
         $message = new MailMessage();
         $message->subject('Форма ларавел');
         $message->line("На вашу форму ".$this->lead->form->name." ответил пользователь "
@@ -56,8 +57,16 @@ class FormOwnerNotification extends Notification implements ShouldQueue
         return $message;
     }
 
-    public function toTelegram () {
-        return TelegramMessage::create()->to()
+    public function toTelegram ($notifiable) {
+        $telegramMessage = new TelegramMessage();
+
+        $message = "На вашу форму ". $this->lead->form->name. " ответил пользователь " . $this->lead->email;
+
+        foreach ($this->lead->answers as $answer) {
+            $message .= "\n" . ' '. "*". $answer->question->question. "*" . ' ' .$answer->value;
+        }
+        return TelegramMessage::create()
+            ->content($message);
     }
 
 }

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'telegram_chat_id'
     ];
 
     /**
@@ -44,4 +45,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function routeNotificationForTelegram()
+    {
+        return $this->telegram_chat_id;
+    }
+
 }
