@@ -11,7 +11,8 @@ class Question extends Model
 
     protected $fillable = [
         'question',
-        'form_id'
+        'form_id',
+        'type'
     ];
 
     public function form() {

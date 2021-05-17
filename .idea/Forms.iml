@@ -117,6 +117,11 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/okipa/laravel-table" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/okipa/laravel-html-helper" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel-notification-channels/telegram" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/hanneskod/classtools" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/bensampo/laravel-enum" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laminas/laminas-zendframework-bridge" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laminas/laminas-code" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laminas/laminas-eventmanager" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

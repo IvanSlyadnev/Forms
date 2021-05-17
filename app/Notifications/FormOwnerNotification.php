@@ -44,7 +44,6 @@ class FormOwnerNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-
         $message = new MailMessage();
         $message->subject('Форма ларавел');
         $message->line("На вашу форму ".$this->lead->form->name." ответил пользователь "

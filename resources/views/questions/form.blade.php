@@ -8,10 +8,13 @@
         @else
             {!! Form::model($question, ['method' => 'post', 'route'=> ['forms.questions.store', $form->id]]) !!}
         @endif
-        <label>Введите название вашего вопроса</label>
+        {!! Form::label('question'.$question->id, 'Введите название вашего вопроса') !!}
+        <br>
+        {!! Form::select('type', ['input'=> 'инпут', 'text' => 'текстовый']) !!}
         <br>
         {!! Form::text('question', null , ['class' => 'form-control']) !!}
         <br>
+
         {!! Form::submit($question->id ? 'Редактировать' : 'Создать', ['class' => 'btn btn-success']) !!}
         {!! Form::close() !!}
     </div>

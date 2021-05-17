@@ -112,6 +112,11 @@
       <path value="$PROJECT_DIR$/vendor/okipa/laravel-table" />
       <path value="$PROJECT_DIR$/vendor/okipa/laravel-html-helper" />
       <path value="$PROJECT_DIR$/vendor/laravel-notification-channels/telegram" />
+      <path value="$PROJECT_DIR$/vendor/hanneskod/classtools" />
+      <path value="$PROJECT_DIR$/vendor/bensampo/laravel-enum" />
+      <path value="$PROJECT_DIR$/vendor/laminas/laminas-zendframework-bridge" />
+      <path value="$PROJECT_DIR$/vendor/laminas/laminas-code" />
+      <path value="$PROJECT_DIR$/vendor/laminas/laminas-eventmanager" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />

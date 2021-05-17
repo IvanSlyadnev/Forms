@@ -12,7 +12,11 @@
                 {!! Form::text('email', $email ,['class' => 'form-control']) !!}
                 @foreach($form->questions as $question)
                     {!! Form::label('question'.$question->id, $question->question) !!}
-                    {!! Form::text('question['.$question->id.']', '', ['class' => 'form-control', 'id' => 'question'.$question->id]) !!}
+                    @if ($question->type == 'input')
+                        {!! Form::text('question['.$question->id.']', '', ['class' => 'form-control', 'id' => 'question'.$question->id]) !!}
+                    @elseif($question->type == 'text')
+                        {!! Form::textarea('question['.$question->id.']', '', ['class' => 'form-control', 'id' => 'question'.$question->id])!!}
+                    @endif
                 @endforeach
                 {!! Form::submit('Ответить', ['class' => 'btn btn-success']) !!}
             {!! Form::close() !!}

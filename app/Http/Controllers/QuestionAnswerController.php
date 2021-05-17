@@ -17,8 +17,8 @@ class QuestionAnswerController extends Controller
         foreach ($request->question as $question_id => $question) {
             $lead->answers()->create(['value'=> $question, 'question_id' => $question_id]);
         }
-        $lead->notify(new LeadNotification());
-        $form->user->notify(new FormOwnerNotification($lead));
+        //$lead->notify(new LeadNotification());
+        //$form->user->notify(new FormOwnerNotification($lead));
         return redirect()->route('forms.fill', $form->id)->with('success', 'форма успешно сохранена');
     }
 }
