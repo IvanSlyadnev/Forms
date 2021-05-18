@@ -9,9 +9,11 @@
         "bensampo/laravel-enum": "^3.3",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "7.0.1",
+        "irazasyed/telegram-bot-sdk": "^3.4.1",
         "laravel-notification-channels/telegram": "^0.5.1",
         "laravel/framework": "^8.40",
+        "laravel/telescope": "^4.4",
         "laravel/tinker": "^2.5",
         "laravelcollective/html": "^6.2",
         "okipa/laravel-table": "^4.0"
