@@ -15,6 +15,11 @@ class Chat extends Model
     ];
 
     public function messages() {
-        return $this->belongsToMany(Message::class);
+        return $this->belongsToMany(Message::class)->withPivot('answer');
     }
+
+    public function currentMessage() {
+        return $this->belongsTo(Chat::class, 'current_message_id');
+    }
+
 }
