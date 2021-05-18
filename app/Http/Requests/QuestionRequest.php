@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\QuestionType;
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\RequiredIf;
 
 class QuestionRequest extends FormRequest
 {
@@ -24,7 +27,9 @@ class QuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            'question' => 'required'
+            'question' => 'required',
+            'type' => ['required', new EnumValue(QuestionType::class)],
+            'values' => new RequiredIf(in_array($this->type, [QuestionType::select, QuestionType::radio])),
         ];
     }
 

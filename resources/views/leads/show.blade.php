@@ -22,7 +22,7 @@
                     @case(\App\Enums\QuestionType::radio)
                         @foreach($answer->question->values_array as $value)
                             {!! Form::label('question['.$answer->question->id.']', $value) !!}
-                            {!! Form::radio('question['.$answer->question->id.']', $value, ($value == $answer->value) ? true : false, ['disabled' => true]) !!}
+                            {!! Form::radio('question['.$answer->question->id.']', $value, ($value == $answer->value), ['disabled' => true]) !!}
                         @endforeach
                         @break;
                 @endswitch
