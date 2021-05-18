@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Webhook;
 use App\Http\Controllers\Controller;
 use App\Models\Chat;
 use App\Models\Message;
-use App\Models\TelegramMessage;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Monolog\Logger;
@@ -29,9 +28,12 @@ class TelegramController extends Controller
                     'text' => $this->getMessage($updates)
                 ]);
                 $question = $this->getRandomQuestion($chat_id);
+
                 if ($question) {
-                    $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
-                    $chat->messages()->attach($question);
+                    $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id, 'current_message_id' => $question->id]);
+                    $chat->messages()->attach($question);//соединям $question
+
+
                     Telegram::sendMessage([
                         'chat_id' => $chat_id,
                         'text' => $question->text
