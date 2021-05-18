@@ -35,7 +35,8 @@ class QuestionRequest extends FormRequest
 
     public function messages() {
         return [
-            'question.required' => 'Введите вопрос'
+            'question.required' => 'Введите вопрос',
+            'values.required' => 'Введите варинты ответов'
         ];
     }
 }
