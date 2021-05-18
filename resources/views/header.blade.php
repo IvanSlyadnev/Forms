@@ -15,7 +15,7 @@ $forms = Form::all();
                 @guest
                 @else
                 <li>
-                    <a href="{{route('forms.index')}}"><button>Посмотреть формы</button></a>
+                    <a href="{{route('forms.index')}}"><button class="btn btn-primary">Посмотреть формы</button></a>
                 </li>
                 <li>
                     <div class="dropdown">
