@@ -10,7 +10,8 @@ class Chat extends Model
     use HasFactory;
 
     protected $fillable = [
-        'telegram_chat_id'
+        'telegram_chat_id',
+        'current_message_id'
     ];
 
     public function messages() {

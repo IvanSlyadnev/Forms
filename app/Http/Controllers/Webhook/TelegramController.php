@@ -17,18 +17,26 @@ class TelegramController extends Controller
         try {
             $updates = Telegram::getWebhookUpdates();
             $chat_id = $updates->getMessage()->getChat()->getId();
-            Telegram::sendMessage([
-                'chat_id' => $chat_id,
-                'text' => $this->getMessage($updates)
-              ]);
-            $question = $this->getRandomQuestion($chat_id);
-            if ($question) {
-                $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
-                $chat->messages()->attach($question);
+            if ($updates->getMessage()->getText() == 'где находится офис?') {
+                Telegram::sendLocation([
+                    'chat_id' => $chat_id,
+                    'latitude' => 55.775586,
+                    'longitude' =>37.586006
+                ]);
+            } else {
                 Telegram::sendMessage([
                     'chat_id' => $chat_id,
-                    'text' => $question->text
+                    'text' => $this->getMessage($updates)
                 ]);
+                $question = $this->getRandomQuestion($chat_id);
+                if ($question) {
+                    $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
+                    $chat->messages()->attach($question);
+                    Telegram::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => $question->text
+                    ]);
+                }
             }
         } catch (\Throwable $e) {
             logger()->info($e->getMessage());

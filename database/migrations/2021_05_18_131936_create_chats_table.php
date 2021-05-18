@@ -16,6 +16,8 @@ class CreateChatsTable extends Migration
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('telegram_chat_id');
+            $table->bigInteger('current_message_id')->unsigned();
+            $table->foreign('current_message_id')->references('id')->on('messages');
             $table->timestamps();
         });
     }
