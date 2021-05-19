@@ -22,4 +22,8 @@ class Chat extends Model
         return $this->belongsTo(Message::class, 'current_message_id');
     }
 
+    public function leads() {
+        return $this->hasMany(Lead::class, 'current_lead_id');
+    }
+
 }

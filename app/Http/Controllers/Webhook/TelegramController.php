@@ -15,13 +15,13 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramController extends Controller
 {
-    /*public function __invoke()
+    public function __invoke()
     {
         
-    }*/
+    }
 
 
-
+    /*
     public function __invoke(){
         try {
             $updates = Telegram::getWebhookUpdates();
@@ -127,7 +127,7 @@ class TelegramController extends Controller
         return Message::whereDoesntHave('chats', function ($query) use ($chat_id) {
             $query->where('telegram_chat_id', $chat_id);
         })->inRandomOrder()->first();
-    }
+    }*/
 
 
 }

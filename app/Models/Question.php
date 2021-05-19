@@ -21,6 +21,10 @@ class Question extends Model
         return $this->belongsTo(Form::class);
     }
 
+    public function lead() {
+        return $this->belongsTo(Lead::class, 'current_question_id');
+    }
+
     public function answers() {
         return $this->hasMany(Answer::class);
     }

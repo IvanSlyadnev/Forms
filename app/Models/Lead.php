@@ -20,7 +20,17 @@ class Lead extends Model
         return $this->belongsTo(Form::class);
     }
 
+    public function chat() {
+        return $this->belongsTo(Chat::class, 'current_lead_id');
+    }
+
+    public function questions() {
+        return $this->hasMany(Question::class, 'current_question_id');
+    }
+
     public function answers() {
         return $this->hasMany(Answer::class);
     }
+
+    
 }
