@@ -14,7 +14,11 @@ class MessageSeeder extends Seeder
      */
     public function run()
     {
-        Message::updateOrCreate(['text' => 'Откуда ты?']);
-        Message::updateOrCreate(['text' => 'Сколько тебе лет?']);
+        Message::updateOrCreate(['text' => 'Откуда ты?', 'type'=>'input']);
+        Message::updateOrCreate(['text' => 'Сколько тебе лет?', 'type' => 'input']);
+        Message::updateOrCreate(
+            ['text' => 'Выбирите что будете есть', 'type' => 'select'],
+            ['values' => "картошка,мясо,хлеб"]
+        );
     }
 }
