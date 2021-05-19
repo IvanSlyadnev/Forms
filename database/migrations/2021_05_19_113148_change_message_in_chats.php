@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCurrentLeadInChats extends Migration
+class ChangeMessageInChats extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddCurrentLeadInChats extends Migration
     public function up()
     {
         Schema::table('chats', function (Blueprint $table) {
-            $table->bigInteger('current_lead_id')->unsigned()->nullable();
-            $table->foreign('current_lead_id')->references('id')->on('leads');    
+            $table->string('current_question_id');
         });
     }
 
@@ -27,9 +26,7 @@ class AddCurrentLeadInChats extends Migration
     public function down()
     {
         Schema::table('chats', function (Blueprint $table) {
-            $table->dropForeign(['current_lead_id']);
-            $table->dropColumn('current_lead_id');
-            
+            //
         });
     }
 }

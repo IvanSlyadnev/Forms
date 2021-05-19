@@ -21,16 +21,16 @@ class Question extends Model
         return $this->belongsTo(Form::class);
     }
 
-    public function lead() {
-        return $this->belongsTo(Lead::class, 'current_question_id');
+    public function leads() {
+        return $this->hasMany(Lead::class, 'current_question_id');
     }
 
     public function answers() {
         return $this->hasMany(Answer::class);
     }
 
-    public function updateQuestion($form, $data) {
-        return $form->questions()->where('id', $this->id)->update($data);
+    public function chats() {
+        return $this->belongsToMany(Chat::class)->withPivot('answer');
     }
 
 }

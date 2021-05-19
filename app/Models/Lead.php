@@ -21,11 +21,11 @@ class Lead extends Model
     }
 
     public function chat() {
-        return $this->belongsTo(Chat::class, 'current_lead_id');
+        return $this->hasOne(Chat::class, 'current_lead_id');
     }
 
-    public function questions() {
-        return $this->hasMany(Question::class, 'current_question_id');
+    public function currentQuestion() {
+        return $this->belongsTo(Question::class, 'current_question_id');
     }
 
     public function answers() {
