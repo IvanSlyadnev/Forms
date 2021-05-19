@@ -19,7 +19,7 @@ class Chat extends Model
     }
 
     public function currentMessage() {
-        return $this->belongsTo(Chat::class, 'current_message_id');
+        return $this->belongsTo(Message::class, 'current_message_id');
     }
 
 }

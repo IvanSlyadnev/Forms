@@ -16,6 +16,7 @@ class TelegramController extends Controller
         try {
             $updates = Telegram::getWebhookUpdates();
             $chat_id = $updates->getMessage()->getChat()->getId();
+            $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
             if ($updates->getMessage()->getText() == 'где находится офис?') {
                 Telegram::sendLocation([
                     'chat_id' => $chat_id,
@@ -27,12 +28,20 @@ class TelegramController extends Controller
                     'chat_id' => $chat_id,
                     'text' => $this->getMessage($updates)
                 ]);
+                logger()->info($chat->currentMessage);
+                if ($chat->currentMessage) {
+                    $chat->messages()->syncWithoutDetaching([$chat->currentMessage->id => ['answer' => $updates->getMessage()->getText()]]);
+                    $chat->currentMessage()->dissociate();
+                }
+
                 $question = $this->getRandomQuestion($chat_id);
-
+                //$chat = Chat::where('telegram_chat_id', $chat_id)->first();
+                //logger()->info($chat->messages);
                 if ($question) {
-                    $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id, 'current_message_id' => $question->id]);
+                    $chat->currentMessage()->associate($question)->save();
+                    //$chat->update(['current_message_id', $question->id]);
+                    //$chat->current_message_id = $question_id;//$chat->save();
                     $chat->messages()->attach($question);//соединям $question
-
 
                     Telegram::sendMessage([
                         'chat_id' => $chat_id,

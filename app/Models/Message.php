@@ -10,10 +10,10 @@ class Message extends Model
     use HasFactory;
 
     public function chats() {
-        return $this->belongsToMany(Chat::class);
+        return $this->belongsToMany(Chat::class)->withPivot('answer');
     }
 
-    public function currentMessage() {
-        return $this->belongsTo(Chat::class, 'current_message_id');
+    public function currentChats() {
+        return $this->hasMany(Chat::class, 'current_message_id');
     }
 }
