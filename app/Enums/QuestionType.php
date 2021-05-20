@@ -16,4 +16,5 @@ final class QuestionType extends Enum
     const select = "select";
     const checkbox = "checkbox";
     const radio = "radio";
+    const file = "file";
 }

@@ -17,6 +17,9 @@ use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use App\Notifications\FormOwnerNotification;
 use App\Notifications\LeadNotification;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
 class TelegramController extends Controller
 {
     public function __invoke()
@@ -50,29 +53,54 @@ class TelegramController extends Controller
                 }
                 if ($chat->currentLead->currentQuestion) {
                     $values = $chat->currentLead->currentQuestion->values_array;
-                    if ($updates->getCallbackQuery()) {
-                        $answer = $updates->callback_query->data;
-                    } else {
-                        $answer = $updates->getMessage()->getText();
+                    switch ($chat->currentLead->currentQuestion->type) {
+                        case QuestionType::input:
+                        case QuestionType::textarea:
+                            if ($updates->getMessage()->getText()) {
+                                $answer = $updates->getMessage()->getText();
+                            }
+                            break;
+                        case QuestionType::select:
+                        case QuestionType::radio:
+                            if ($updates->getCallbackQuery()) {
+                                $answer = $updates->callback_query->data;
+                            }
+                            break;
+                        case QuestionType::file:
+                            if ($updates->getMessage()->getPhoto()) {
+                                $answer = $this->getImage($updates);
+                            }
+                            break;
+                        default :
+                            return;
                     }
-                    if (in_array($answer, $values) || $chat->currentLead->currentQuestion->values == null) {
-                        $chat->currentLead->answers()->create([
-                            'value' => $answer,
-                            'question_id' => $chat->currentLead->currentQuestion->id,
-                            //'lead_id' => $chat->currentLead->id
-                        ]);
+                    if (isset($answer)) {
+                        if (in_array($answer, $values) || $chat->currentLead->currentQuestion->values == null) {
+                            $chat->currentLead->answers()->create([
+                                'value' => $answer,
+                                'question_id' => $chat->currentLead->currentQuestion->id,
+                                //'lead_id' => $chat->currentLead->id
+                            ]);
+                        } else {
+                            Telegram::sendMessage([
+                                'chat_id' => $chat_id,
+                                'text' => 'Выберите ответ из предложенных'
+                            ]);
+                        }
                     } else {
                         Telegram::sendMessage([
                             'chat_id' => $chat_id,
-                            'text' => 'Выберите ответ из предложенных'
+                            'text' => 'Нельзя так'
                         ]);
                     }
+
                 }
                 $chat->currentLead->currentQuestion()->associate($this->getQuestion($chat->currentLead))->save();
                 if ($chat->currentLead->currentQuestion) {
                     switch ($chat->currentLead->currentQuestion->type) {
                         case QuestionType::input:
                         case QuestionType::textarea:
+                        case QuestionType::file:
                             Telegram::sendMessage([
                                 'chat_id' => $chat_id,
                                 'text' => $chat->currentLead->currentQuestion->question
@@ -95,7 +123,7 @@ class TelegramController extends Controller
                                 'text' => $chat->currentLead->currentQuestion->question,
                                 'reply_markup' => $reply_markup
                             ]);
-                            break;
+                        break;
                     }
                 } else {
                     $resultMessage = "Вы ответили на все вопросы" . "\n";
@@ -111,7 +139,7 @@ class TelegramController extends Controller
                     $chat->currentLead->form->user->notify(new FormOwnerNotification($chat->currentLead));
                     $chat->currentLead->notify(new LeadNotification());
                     $chat->currentLead()->dissociate()->save();
-                    
+
                 }
             }
 
@@ -120,6 +148,15 @@ class TelegramController extends Controller
         } catch (\Throwable $e) {
             logger()->info($e->getMessage());
         }
+    }
+
+    private function getImage($updates) {
+        $path = Telegram::getFile(['file_id' => $updates->getMessage()->getPhoto()->first()['file_id']])->file_path;
+        $expansion = explode('.', $path)[1];
+        $name = Str::random(10).'.'.$expansion;
+        $link = "https://api.telegram.org/file/bot1741261740:AAEerwS3jYwI89vs2kGpbge2SurTIgYtzl4/".$path;
+        Storage::put('/public/files/'.$name, file_get_contents($link));
+        return "files/".$name;
     }
 
     private function getQuestion($lead)

@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
-{   
+{
     use HasFactory, HasValuesArray;
 
     protected $fillable = [
         'question',
         'form_id',
         'type',
-        'values'
+        'values',
+        'file'
     ];
 
     public function form() {

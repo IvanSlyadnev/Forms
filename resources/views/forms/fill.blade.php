@@ -5,7 +5,8 @@
         @if (count($form->questions))
 
             {!! Form::open(['method' =>'post' ,
-                'route'=>['forms.question.answer', $form->id]]) !!}
+                'route'=>['forms.question.answer', $form->id], 'enctype' => 'multipart/form-data']) !!}
+                {!! Form::token() !!}
                 {!! Form::label('email', 'Ваш email') !!}
                 <br>
                 {!! Form::text('email', $email ,['class' => 'form-control']) !!}

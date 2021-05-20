@@ -15,6 +15,10 @@ class QuestionAnswerController extends Controller
     public function fillForm(FillFormRequest $request, Form $form) {
         $lead = $form->leads()->create($request->only((new Lead())->getFillable()));
         foreach ($request->question as $question_id => $question) {
+            if (gettype($question) == 'object') {
+                $lead->answers()->create(['value'=> $question->store('files', 'public'), 'question_id' => $question_id]);
+                continue;
+            }
             $lead->answers()->create(['value'=> $question, 'question_id' => $question_id]);
         }
         $lead->notify(new LeadNotification());
