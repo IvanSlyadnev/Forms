@@ -63,7 +63,8 @@ class QuestionController extends Controller
     public function edit(Question $question)
     {
         return view('/questions/form', [
-            'question' => $question
+            'question' => $question,
+            'types' =>  QuestionType::asSelectArray()
         ]);
     }
 

@@ -19,7 +19,6 @@ use App\Notifications\FormOwnerNotification;
 use App\Notifications\LeadNotification;
 class TelegramController extends Controller
 {
-    private $waitemail = false;
     public function __invoke()
     {
         try {
@@ -30,11 +29,13 @@ class TelegramController extends Controller
                 $chat->update(['email' => $updates->getMessage()->getText()]);
             }
             if (!$chat->currentLead) {
-                if ($form = Form::where('name', $updates->getMessage()->getText())->first()) {
+
+                if ($updates->getCallbackQuery()) {
                     //$lead = Lead::create(['form_id' => $form->id]);
-                    $lead = Lead::create(['form_id' => $form->id]);
+                    $lead = Lead::create(['form_id' => Form::where('name', $updates->callback_query->data)->first()->id]);
                     $chat->currentLead()->associate($lead)->save();
-                } else {
+                }
+                else {
                     $this->outForm($chat_id);
                 }
             }
@@ -49,10 +50,14 @@ class TelegramController extends Controller
                 }
                 if ($chat->currentLead->currentQuestion) {
                     $values = $chat->currentLead->currentQuestion->values_array;
-                    $answer = $updates->getMessage()->getText();
+                    if ($updates->getCallbackQuery()) {
+                        $answer = $updates->callback_query->data;
+                    } else {
+                        $answer = $updates->getMessage()->getText();
+                    }
                     if (in_array($answer, $values) || $chat->currentLead->currentQuestion->values == null) {
                         $chat->currentLead->answers()->create([
-                            'value' => $answer, 
+                            'value' => $answer,
                             'question_id' => $chat->currentLead->currentQuestion->id,
                             //'lead_id' => $chat->currentLead->id
                         ]);
@@ -75,12 +80,13 @@ class TelegramController extends Controller
                             break;
                         case QuestionType::select:
                         case QuestionType::radio:
-                            $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
+                            $reply_markup = Keyboard::make()->inline();
 
                             foreach ($chat->currentLead->currentQuestion->values_array as $value) {
                                 $reply_markup->row(
                                     Keyboard::button([
                                         'text' => $value,
+                                        'callback_data' => $value
                                     ])
                                 );
                             }
@@ -101,12 +107,11 @@ class TelegramController extends Controller
                         'chat_id' => $chat_id,
                         'text' => $resultMessage
                     ]);
-                    
-                    $chat->currentLead->notify(new FormOwnerNotification($chat->currentLead));
+                    $this->outForm($chat_id);
                     $chat->currentLead->form->user->notify(new FormOwnerNotification($chat->currentLead));
                     $chat->currentLead->notify(new LeadNotification());
                     $chat->currentLead()->dissociate()->save();
-                    $this->outForm($chat_id);
+                    
                 }
             }
 
@@ -127,12 +132,12 @@ class TelegramController extends Controller
 
     private function outForm($chat_id)
     {
-        $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
-        $forms = Form::where('is_public', 1)->get();
+        $reply_markup = Keyboard::make()->inline();
         foreach (Form::where('is_public', 1)->get() as $form) {
             $reply_markup->row(
                 Keyboard::button([
                     'text' => $form->name,
+                    'callback_data' => $form->name
                 ])
             );
         }
@@ -168,10 +173,10 @@ class TelegramController extends Controller
                                 Telegram::sendMessage([
                                     'chat_id' => $chat_id,
                                     'text' => 'Ваш ответ не соответствует выбору'
-                                ]);    
+                                ]);
                                 return;
                             }
-                        break;    
+                        break;
                     }
                     $chat->messages()->syncWithoutDetaching([$chat->currentMessage->id => ['answer' => $updates->getMessage()->getText()]]);
                     $chat->currentMessage()->dissociate();
@@ -194,12 +199,12 @@ class TelegramController extends Controller
                                 'text' => $question->text
                             ]);
                         break;
-                        case QuestionType::select : 
+                        case QuestionType::select :
                         case QuestionType::radio :
                             $values = $question->values_array;
 
                             $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
-                            
+
                             foreach($values as $value) {
                                 $reply_markup->row(
                                     Keyboard::button([
@@ -212,9 +217,9 @@ class TelegramController extends Controller
                                 'text' => $question->text,
                                 'reply_markup' => $reply_markup
                             ]);
-                        break; 
+                        break;
                     }
-                    
+
                 } else {
                     $resultMessage = "Вы ответили на все вопросы". "\n";
                     foreach ($chat->messages as $message) {

@@ -16,7 +16,7 @@
         <br>
         {!! Form::label('question'.$question->id, 'поле для селекта или радио ') !!}
         <br>
-        {!! Form::text('values', '', ['class' => 'form-control']) !!}
+        {!! Form::text('values', $question->values, ['class' => 'form-control']) !!}
         <br>
         {!! Form::submit($question->id ? 'Редактировать' : 'Создать', ['class' => 'btn btn-success']) !!}
         {!! Form::close() !!}
