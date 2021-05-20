@@ -56,7 +56,7 @@ class FormOwnerNotification extends Notification implements ShouldQueue
         return $message;
     }
 
-    public function toTelegram ($notifiable) {
+    public function toTelegram ($notifiable) {  
         $telegramMessage = new TelegramMessage();
 
         $message = "На вашу форму ". $this->lead->form->name. " ответил пользователь " . $this->lead->email;

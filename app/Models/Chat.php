@@ -11,7 +11,8 @@ class Chat extends Model
 
     protected $fillable = [
         'telegram_chat_id',
-        'current_message_id'
+        'current_message_id',
+        'email'
     ];
 
     public function messages() {

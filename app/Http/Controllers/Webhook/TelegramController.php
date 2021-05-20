@@ -15,15 +15,20 @@ use Illuminate\Http\Request;
 use Monolog\Logger;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
-
+use App\Notifications\FormOwnerNotification;
+use App\Notifications\LeadNotification;
 class TelegramController extends Controller
 {
+    private $waitemail = false;
     public function __invoke()
     {
         try {
             $updates = Telegram::getWebhookUpdates();
             $chat_id = $updates->getMessage()->getChat()->getId();
             $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
+            if ($chat->currentLead && !$chat->email) {
+                $chat->update(['email' => $updates->getMessage()->getText()]);
+            }
             if (!$chat->currentLead) {
                 if ($form = Form::where('name', $updates->getMessage()->getText())->first()) {
                     //$lead = Lead::create(['form_id' => $form->id]);
@@ -34,14 +39,30 @@ class TelegramController extends Controller
                 }
             }
             if ($chat->currentLead) {
-                if ($chat->currentLead->currentQuestion) {
-                    $chat->currentLead->answers()->create([
-                        'value' => $updates->getMessage()->getText(),
-                        'question_id' => $chat->currentLead->currentQuestion->id,
-                        //'lead_id' => $chat->currentLead->id
+                $chat->currentLead()->update(['email' => $chat->email]);
+                if (!$chat->email) {
+                    Telegram::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => 'Отправьте свой email'
                     ]);
+                    return;
                 }
-                //$chat->currentLead->currentQuestion()->dissociate();  
+                if ($chat->currentLead->currentQuestion) {
+                    $values = $chat->currentLead->currentQuestion->values_array;
+                    $answer = $updates->getMessage()->getText();
+                    if (in_array($answer, $values) || $chat->currentLead->currentQuestion->values == null) {
+                        $chat->currentLead->answers()->create([
+                            'value' => $answer, 
+                            'question_id' => $chat->currentLead->currentQuestion->id,
+                            //'lead_id' => $chat->currentLead->id
+                        ]);
+                    } else {
+                        Telegram::sendMessage([
+                            'chat_id' => $chat_id,
+                            'text' => 'Выберите ответ из предложенных'
+                        ]);
+                    }
+                }
                 $chat->currentLead->currentQuestion()->associate($this->getQuestion($chat->currentLead))->save();
                 if ($chat->currentLead->currentQuestion) {
                     switch ($chat->currentLead->currentQuestion->type) {
@@ -80,6 +101,10 @@ class TelegramController extends Controller
                         'chat_id' => $chat_id,
                         'text' => $resultMessage
                     ]);
+                    
+                    $chat->currentLead->notify(new FormOwnerNotification($chat->currentLead));
+                    $chat->currentLead->form->user->notify(new FormOwnerNotification($chat->currentLead));
+                    $chat->currentLead->notify(new LeadNotification());
                     $chat->currentLead()->dissociate()->save();
                     $this->outForm($chat_id);
                 }

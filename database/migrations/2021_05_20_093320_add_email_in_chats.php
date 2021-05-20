@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeMessageInChats extends Migration
+class AddEmailInChats extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class ChangeMessageInChats extends Migration
     public function up()
     {
         Schema::table('chats', function (Blueprint $table) {
-            $table->string('current_question_id')->nullable();
+            $table->string('email')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class ChangeMessageInChats extends Migration
     public function down()
     {
         Schema::table('chats', function (Blueprint $table) {
-            $table->dropColumn('current_question_id');
+            $table->dropColumn('email');
         });
     }
 }
