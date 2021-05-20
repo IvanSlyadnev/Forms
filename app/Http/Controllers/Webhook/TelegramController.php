@@ -74,7 +74,7 @@ class TelegramController extends Controller
                     $resultMessage = "Вы ответили на все вопросы". "\n";
                     
                     foreach($chat->currentLead->answers as $answer) {
-                        $resultMessage .= $answer->question->question.' - '.$answer->value;
+                        $resultMessage .= $answer->question->question.' - '.$answer->value."\n";
                     }
                     $chat->currentLead = false;
                     logger()->info($chat->currentLead);
@@ -82,24 +82,10 @@ class TelegramController extends Controller
                         'chat_id' => $chat_id,
                         'text' => $resultMessage
                     ]);
+                    $this->outForm($chat_id);
                 }
             } else {
-                $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
-                $forms = Form::where('is_public', 1)->get();
-                foreach (Form::where('is_public', 1)->get() as $form) {
-                    $reply_markup->row(
-                        Keyboard::button([
-                            'text' => $form->name,
-                        ])
-                    ); 
-                }
-                Telegram::sendMessage([
-                    'chat_id' => $chat_id,
-                    'text' => 'выбирай форму',
-                    'reply_markup' => $reply_markup
-                ]);
-                
-                
+                $this->outForm($chat_id);
             }
             //вывод вопросов
         
@@ -115,6 +101,24 @@ class TelegramController extends Controller
             ->whereDoesntHave('answers', function ($query) use($lead) {
                 $query->where('lead_id', $lead->id);
             })->first();
+    }
+
+    private function outForm($chat_id) {
+        $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
+                $forms = Form::where('is_public', 1)->get();
+                foreach (Form::where('is_public', 1)->get() as $form) {
+                    $reply_markup->row(
+                        Keyboard::button([
+                            'text' => $form->name,
+                        ])
+                    ); 
+                }
+                Telegram::sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => 'выбирай форму',
+                    'reply_markup' => $reply_markup
+                ]);
+                
     }
 
     /*
