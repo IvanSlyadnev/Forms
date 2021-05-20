@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhook;
 
 use App\Enums\QuestionType;
 use App\Http\Controllers\Controller;
+use App\Models\Answer;
 use App\Models\Chat;
 use App\Models\Form;
 use App\Models\Lead;
@@ -17,68 +18,103 @@ use Telegram\Bot\Laravel\Facades\Telegram;
 
 class TelegramController extends Controller
 {
+    private $form = null;
     public function __invoke()
     {
         try {
             $updates = Telegram::getWebhookUpdates();
             $chat_id = $updates->getMessage()->getChat()->getId();
             $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
-            logger()->info($chat->currentLead);
-            if (!$chat->currentLead) {
-                $form = Form::where('name', $updates->getMessage()->getText())->first();
-                if ($form) {
-                    $lead = Lead::create(['form_id' => $form->id]);
-                    $chat->currentLead()->associate($lead)->save();
-                    $chat->currentLead->currentQuestion()->associate($this->getQuestion($chat->currentLead))->save();
-                    //detaching
-                } else {
-                    $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
-                    $forms = Form::where('is_public', 1)->get();
-                    foreach (Form::where('is_public', 1)->get() as $form) {
-                        $reply_markup->row(
-                            Keyboard::button([
-                                'text' => $form->name,
-                            ])
-                        ); 
+            $this->form = Form::where('name', $updates->getMessage()->getText())->first();
+            if ($this->form != null) {
+                logger()->info('Создание текущего лида');
+                $lead = Lead::create(['form_id' => $this->form->id]);
+                $chat->currentLead()->associate($lead)->save();
+            }
+            logger()->info('lid'.$chat->currentLead);
+            if ($chat->currentLead) {
+                if ( $chat->currentLead->currentQuestion) {    
+                $chat->currentLead->answers()->create([
+                    'value'=> $updates->getMessage()->getText(), 
+                    'question_id' => $chat->currentLead->currentQuestion->id,
+                    'lead_id' => $chat->currentLead->id
+                ]);
+                }
+                //$chat->currentLead->currentQuestion()->dissociate();  
+                $chat->currentLead->currentQuestion()->associate($this->getQuestion($chat->currentLead))->save(); 
+                if ($chat->currentLead->currentQuestion) {
+                    switch ($chat->currentLead->currentQuestion->type) 
+                    {
+                        case QuestionType::input :
+                        case QuestionType::textarea :
+                            Telegram::sendMessage([
+                                'chat_id' => $chat_id,
+                                'text' => $chat->currentLead->currentQuestion->question
+                            ]);
+                        break;  
+                        case QuestionType::select : 
+                        case QuestionType::radio :    
+                            $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
+                            
+                            foreach($chat->currentLead->currentQuestion->values_array as $value) {
+                                $reply_markup->row(
+                                    Keyboard::button([
+                                        'text' => $value,
+                                    ])
+                                );
+                            }
+                            Telegram::sendMessage([
+                                'chat_id' => $chat_id,
+                                'text' => $chat->currentLead->currentQuestion->question,
+                                'reply_markup' => $reply_markup
+                            ]);
+                        break;
                     }
+                } else {
+                    $resultMessage = "Вы ответили на все вопросы". "\n";
+                    
+                    foreach($chat->currentLead->answers as $answer) {
+                        $resultMessage .= $answer->question->question.' - '.$answer->value;
+                    }
+                    $chat->currentLead = false;
+                    logger()->info($chat->currentLead);
                     Telegram::sendMessage([
                         'chat_id' => $chat_id,
-                        'text' => 'выбирай форму',
-                        'reply_markup' => $reply_markup
+                        'text' => $resultMessage
                     ]);
                 }
             } else {
-                switch ($chat->currentLead->currentQuestion->type) {
-                    case QuestionType::input :
-                    case QuestionType::textarea :
-                        Telegram::sendMessage([
-                            'chat_id' => $chat_id,
-                            'text' => $chat->currentLead->currentQuestion->question
-                        ]);
-                    break;  
-                    case QuestionType::select : 
-                    case QuestionType::radio :    
-                        $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
-                        logger()->info($chat->currentLead->currentQuestion->values_array);
-                        foreach($chat->currentLead->currentQuestion->values_array as $value) {
-                            $reply_markup->row(
-                                Keyboard::button([
-                                    'text' => $value,
-                                ])
-                            );
-                        }
-                        Telegram::sendMessage([
-                            'chat_id' => $chat_id,
-                            'text' => $chat->currentLead->currentQuestion->question,
-                            'reply_markup' => $reply_markup
-                        ]);
-                    break;
+                $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
+                $forms = Form::where('is_public', 1)->get();
+                foreach (Form::where('is_public', 1)->get() as $form) {
+                    $reply_markup->row(
+                        Keyboard::button([
+                            'text' => $form->name,
+                        ])
+                    ); 
                 }
+                Telegram::sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => 'выбирай форму',
+                    'reply_markup' => $reply_markup
+                ]);
+                
+                
             }
-
-        } catch(\Throwable $e) {
+            //вывод вопросов
+        
+        } 
+        catch(\Throwable $e) 
+        {
             logger()->info($e->getMessage());
         }
+    }
+
+    private function getQuestion($lead) {
+        return Question::where('form_id', $lead->form->id)
+            ->whereDoesntHave('answers', function ($query) use($lead) {
+                $query->where('lead_id', $lead->id);
+            })->first();
     }
 
     /*
@@ -189,11 +225,7 @@ class TelegramController extends Controller
         })->inRandomOrder()->first();
     }*/
 
-    private function getQuestion($lead) {
-        return Question::whereDoesntHave('leads', function ($query) use ($lead) {
-            $query->where('id', $lead->id);
-        })->first();
-    }
+    
     
 
 }
