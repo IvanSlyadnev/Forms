@@ -12,6 +12,7 @@ use App\Models\Message;
 use App\Models\Question;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Monolog\Logger;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -155,7 +156,7 @@ class TelegramController extends Controller
         $path = Telegram::getFile(['file_id' => $updates->getMessage()->getPhoto()->first()['file_id']])->file_path;
         $expansion = explode('.', $path)[1];
         $name = Str::random(10).'.'.$expansion;
-        $link = "https://api.telegram.org/file/bot1741261740:AAEerwS3jYwI89vs2kGpbge2SurTIgYtzl4/".$path;
+        $link = "https://api.telegram.org/file/bot".config('telegram.bots.mybot.token').'/'.$path;
         Storage::put('/public/files/'.$name, file_get_contents($link));
         return "files/".$name;
     }
