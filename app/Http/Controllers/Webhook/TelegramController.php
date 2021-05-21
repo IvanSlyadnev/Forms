@@ -129,7 +129,8 @@ class TelegramController extends Controller
                     $resultMessage = "Вы ответили на все вопросы" . "\n";
 
                     foreach ($chat->currentLead->answers as $answer) {
-                        $resultMessage .= $answer->question->question . ' - ' . $answer->value . "\n";
+                        $resultMessage .= ($answer->question->type == QuestionType::file)
+                            ? asset(Storage::url($answer->value)) : $answer->value;
                     }
                     Telegram::sendMessage([
                         'chat_id' => $chat_id,

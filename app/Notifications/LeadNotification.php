@@ -2,10 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Enums\QuestionType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 
 class LeadNotification extends Notification implements ShouldQueue
@@ -45,7 +47,7 @@ class LeadNotification extends Notification implements ShouldQueue
         $message->subject('Ларавелл форма');
         foreach ($notifiable->answers as $answer) {
             $message->line(new HtmlString("<b>".$answer->question->question."</b>"));
-            $message->line($answer->value);
+            $message->line(($answer->question->type == QuestionType::file) ? asset(Storage::url($answer->value)) : $answer->value);
         }
         return $message;
     }

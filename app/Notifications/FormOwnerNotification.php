@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Enums\QuestionType;
+use Illuminate\Support\Facades\Storage;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
 use Illuminate\Bus\Queueable;
@@ -50,19 +52,21 @@ class FormOwnerNotification extends Notification implements ShouldQueue
             .$this->lead->email);
         foreach ($this->lead->answers as $answer) {
             $message->line(new HtmlString("<b>".$answer->question->question."</b>"));
-            $message->line($answer->value);
+            $message->line(($answer->question->type == QuestionType::file) ? asset(Storage::url($answer->value)) : $answer->value);
         }
 
         return $message;
     }
 
-    public function toTelegram ($notifiable) {  
+    public function toTelegram ($notifiable) {
         $telegramMessage = new TelegramMessage();
 
         $message = "На вашу форму ". $this->lead->form->name. " ответил пользователь " . $this->lead->email;
 
         foreach ($this->lead->answers as $answer) {
-            $message .= "\n" . ' '. "*". $answer->question->question. "*" . ' ' .$answer->value;
+            $message .= "\n" . ' '. "*". $answer->question->question. "*" . ' ';
+            $message .= ($answer->question->type == QuestionType::file)
+                ? asset(Storage::url($answer->value)) : $answer->value;
         }
         return TelegramMessage::create()
             ->content($message);
