@@ -56,9 +56,23 @@ class TelegramController extends Controller
             if (!$chat->currentLead) {
 
                 if ($updates->getCallbackQuery()) {
+
                     //$lead = Lead::create(['form_id' => $form->id]);
-                    $lead = Lead::create(['form_id' => Form::where('name', $updates->callback_query->data)->first()->id]);
-                    $chat->currentLead()->associate($lead)->save();
+                    if ($form_exist = Form::where('name', $updates->callback_query->data)->first()) {
+                        $lead = Lead::create(['form_id' => $form_exist->id]);
+                        $chat->currentLead()->associate($lead)->save();
+                    } else {
+                        $callback_array = explode('|', $updates->callback_query->data);
+                        switch ($callback_array[0]) {
+                            case 'page' : $this->outForm(
+                                $chat_id, $callback_array[1],
+                                $updates->getCallbackQuery()->getMessage()->getMessageId(),
+                                $updates->getCallbackQuery()->getId()
+                            );
+                            break;
+                        }
+
+                    }
                 }
                 else {
                     $this->outForm($chat_id);
@@ -188,12 +202,13 @@ class TelegramController extends Controller
             })->first();
     }
 
-    private function outForm($chat_id)
+    private function outForm($chat_id, $page = 1, $message_id = null, $callback_query_id = null)
     {
         $reply_markup = Keyboard::make()->inline();
         $forms = Form::where('is_public', 1);
         if ($forms->count()) {
-            foreach ($forms->get() as $form) {
+            $paginator = $forms->paginate(2, ['*'] , 'page' , $page);
+            foreach ($paginator as $form) {
                 $reply_markup->row(
                     Keyboard::button([
                         'text' => $form->name,
@@ -201,11 +216,43 @@ class TelegramController extends Controller
                     ])
                 );
             }
-            Telegram::sendMessage([
-                'chat_id' => $chat_id,
-                'text' => 'выбирай форму',
-                'reply_markup' => $reply_markup
-            ]);
+            if (!$paginator->onFirstPage()) {
+                //Вывод кнопки назад
+                $reply_markup->row(
+                    Keyboard::button([
+                        'text' => '<<',
+                        'callback_data' => 'page|'.($paginator->currentPage()-1)
+                    ])
+                );
+            }
+
+            if ($paginator->hasMorePages()) {
+                $reply_markup->row(
+                    Keyboard::button([
+                        'text' => '>>',
+                        'callback_data' => 'page|'.($paginator->currentPage()+1)
+                    ])
+                );
+            }
+            if (!$message_id) {
+                Telegram::sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => 'выбирай форму',
+                    'reply_markup' => $reply_markup
+                ]);
+            } else {
+                Telegram::editMessageText([
+                    'chat_id' => $chat_id,
+                    'text' => 'выбирай форму',
+                    'reply_markup' => $reply_markup,
+                    'message_id' => $message_id
+                ]);
+                Telegram::answerCallbackQuery([
+                    'callback_query_id' => $callback_query_id,
+                ]);
+            }
+
+
         } else {
             Telegram::sendMessage([
                 'chat_id' => $chat_id,
