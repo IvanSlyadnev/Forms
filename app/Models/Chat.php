@@ -27,4 +27,8 @@ class Chat extends Model
         return $this->belongsTo(Lead::class, 'current_lead_id');
     }
 
+    public function user() {
+        return $this->belongsTo(User::class, 'telegram_chat_id', 'telegram_chat_id');
+    }
+
 }

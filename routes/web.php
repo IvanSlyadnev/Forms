@@ -5,8 +5,10 @@ use App\Http\Controllers\FormController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\QuestionAnswerController;
 use App\Http\Controllers\QuestionController;
-
+use \App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,3 +34,9 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::post('forms/question/answer/{form}', [QuestionAnswerController::class, 'fillForm'])->name('forms.question.answer');
 
 Route::get('forms/fill/{form}', [FormController::class, 'fill'])->name('forms.fill');
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('telegram')->redirect();
+});
+
+Route::get('/auth/callback', [AuthController::class, 'telegramLogin']);

@@ -10,9 +10,11 @@ use App\Models\Form;
 use App\Models\Lead;
 use App\Models\Message;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Validator;
 use Monolog\Logger;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -29,6 +31,25 @@ class TelegramController extends Controller
             $updates = Telegram::getWebhookUpdates();
             $chat_id = $updates->getMessage()->getChat()->getId();
             $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
+
+            if ($chat->user && !$chat->user->email) {
+                $message = ['email' => $updates->getMessage()->getText()];
+                $validate = Validator::make($message, [
+                    'email' => 'email|unique:App\Models\User,email',
+                ]);
+                if (!$validate->fails()) {
+                    $chat->user->update($message);
+                    $chat->update($message);
+                } else {
+
+                    Telegram::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => implode("\n", $validate->errors()->all())
+                    ]);
+                    return;
+                }
+            }
+
             if ($chat->currentLead && !$chat->email) {
                 $chat->update(['email' => $updates->getMessage()->getText()]);
             }
@@ -170,19 +191,27 @@ class TelegramController extends Controller
     private function outForm($chat_id)
     {
         $reply_markup = Keyboard::make()->inline();
-        foreach (Form::where('is_public', 1)->get() as $form) {
-            $reply_markup->row(
-                Keyboard::button([
-                    'text' => $form->name,
-                    'callback_data' => $form->name
-                ])
-            );
+        $forms = Form::where('is_public', 1);
+        if ($forms->count()) {
+            foreach ($forms->get() as $form) {
+                $reply_markup->row(
+                    Keyboard::button([
+                        'text' => $form->name,
+                        'callback_data' => $form->name
+                    ])
+                );
+            }
+            Telegram::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => 'выбирай форму',
+                'reply_markup' => $reply_markup
+            ]);
+        } else {
+            Telegram::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => 'Форм нет',
+            ]);
         }
-        Telegram::sendMessage([
-            'chat_id' => $chat_id,
-            'text' => 'выбирай форму',
-            'reply_markup' => $reply_markup
-        ]);
     }
 
     /*

@@ -65,6 +65,7 @@
                             </div>
                         </div>
                     </form>
+                    {!! \Laravel\Socialite\Facades\Socialite::driver('telegram')->getButton() !!}
                 </div>
             </div>
         </div>
