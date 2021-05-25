@@ -144,9 +144,7 @@ class TelegramController extends Controller
 
                 }
             }
-
             //вывод вопросов
-
         } catch (\Throwable $e) {
             logger()->info($e->getMessage());
         }
