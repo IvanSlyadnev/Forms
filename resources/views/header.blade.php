@@ -42,22 +42,7 @@
                 @guest
                 @else
                 <li>
-                    <a href="{{route('forms.index')}}"><button class="btn btn-primary">Посмотреть формы</button></a>
-                </li>
-                <li>
-                    <div class="dropdown">
-                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Формы
-                        </button>
-
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            @foreach(\App\Models\Form::all() as $form)
-                                <a class="dropdown-item" href="{{route('forms.fill', $form->id)}}">
-                                    {{$form->name}}</a>
-                            @endforeach
-
-                        </div>
-                    </div>
+                    <a href="{{route('chats.index')}}"><button class="btn btn-primary">Посмотреть чаты</button></a>
                 </li>
                 @endif
             </ul>
