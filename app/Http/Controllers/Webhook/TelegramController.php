@@ -216,24 +216,22 @@ class TelegramController extends Controller
                     ])
                 );
             }
-            if (!$paginator->onFirstPage()) {
-                //Вывод кнопки назад
-                $reply_markup->row(
-                    Keyboard::button([
-                        'text' => '<<',
-                        'callback_data' => 'page|'.($paginator->currentPage()-1)
-                    ])
-                );
-            }
-
+            $row = [];
+            //logger()->info($paginator->onFirstPage(). ' - '. $paginator->hasMorePages());
             if ($paginator->hasMorePages()) {
-                $reply_markup->row(
-                    Keyboard::button([
-                        'text' => '>>',
-                        'callback_data' => 'page|'.($paginator->currentPage()+1)
-                    ])
-                );
+                $row [] = Keyboard::button([
+                    'text' => '>>',
+                    'callback_data' => 'page|'.($paginator->currentPage()+1)
+                ]);
             }
+            if (!$paginator->onFirstPage()) {
+                $row [] = Keyboard::button([
+                    'text' => '<<',
+                    'callback_data' => 'page|'.($paginator->currentPage()-1)
+                ]);
+            }
+            $reply_markup->row(...$row);
+
             if (!$message_id) {
                 Telegram::sendMessage([
                     'chat_id' => $chat_id,
@@ -251,8 +249,6 @@ class TelegramController extends Controller
                     'callback_query_id' => $callback_query_id,
                 ]);
             }
-
-
         } else {
             Telegram::sendMessage([
                 'chat_id' => $chat_id,
