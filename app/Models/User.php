@@ -11,14 +11,9 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    public function forms () {
-        return $this->hasMany(Form::class);
+    public function chats() {
+        return $this->belongsToMany(Chat::class);
     }
-
-    public function chat() {
-        return $this->belongsTo(Chat::class, 'telegram_chat_id', 'telegram_chat_id');
-    }
-
     /**
      * The attributes that are mass assignable.
      *

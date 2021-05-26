@@ -15,20 +15,8 @@ class Chat extends Model
         'email'
     ];
 
-    public function messages() {
-        return $this->belongsToMany(Message::class)->withPivot('answer');
-    }
-
-    public function currentMessage() {
-        return $this->belongsTo(Message::class, 'current_message_id');
-    }
-
-    public function currentLead () {
-        return $this->belongsTo(Lead::class, 'current_lead_id');
-    }
-
-    public function user() {
-        return $this->belongsTo(User::class, 'telegram_chat_id', 'telegram_chat_id');
+    public function users() {
+        return $this->belongsToMany(User::class);
     }
 
 }

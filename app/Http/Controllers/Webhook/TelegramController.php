@@ -13,6 +13,7 @@ use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Monolog\Logger;
@@ -25,112 +26,67 @@ use Illuminate\Support\Str;
 
 class TelegramController extends Controller
 {
-
-    /*
-    public function __invoke(){
+    public function  __invoke() {
         try {
             $updates = Telegram::getWebhookUpdates();
+            $message = $updates->getMessage()->getText();
             $chat_id = $updates->getMessage()->getChat()->getId();
-            $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
-            if ($updates->getMessage()->getText() == 'где находится офис?') {
-                Telegram::sendLocation([
-                    'chat_id' => $chat_id,
-                    'latitude' => 55.775586,
-                    'longitude' =>37.586006
+
+            $user = User::where('telegram_chat_id', $chat_id)->first();
+
+            if ($user && !$user->email) {
+                $message = ['email' => $updates->getMessage()->getText()];
+                $validate = Validator::make($message, [
+                    'email' => 'email|unique:App\Models\User,email',
                 ]);
-            } else {
-                Telegram::sendMessage([
-                    'chat_id' => $chat_id,
-                    'text' => $this->getMessage($updates)
-                ]);
-                if ($chat->currentMessage) {
-                    switch ($chat->currentMessage->type) {
-                        case QuestionType::select :
-                        case QuestionType::radio :
-                            if (!in_array($updates->getMessage()->getText(), $chat->currentMessage->values_array)) {
-                                Telegram::sendMessage([
-                                    'chat_id' => $chat_id,
-                                    'text' => 'Ваш ответ не соответствует выбору'
-                                ]);
-                                return;
-                            }
-                        break;
-                    }
-                    $chat->messages()->syncWithoutDetaching([$chat->currentMessage->id => ['answer' => $updates->getMessage()->getText()]]);
-                    $chat->currentMessage()->dissociate();
-                }
-
-                $question = $this->getRandomQuestion($chat_id);
-                //$chat = Chat::where('telegram_chat_id', $chat_id)->first();
-                //logger()->info($chat->messages);
-                if ($question) {
-                    $chat->currentMessage()->associate($question)->save();
-                    //$chat->update(['current_message_id', $question->id]);
-                    //$chat->current_message_id = $question_id;//$chat->save();
-                    $chat->messages()->attach($question);//соединям $question
-
-                    switch($question->type) {
-                        case QuestionType::input :
-                        case QuestionType::textarea :
-                            Telegram::sendMessage([
-                                'chat_id' => $chat_id,
-                                'text' => $question->text
-                            ]);
-                        break;
-                        case QuestionType::select :
-                        case QuestionType::radio :
-                            $values = $question->values_array;
-
-                            $reply_markup = Keyboard::make()->setResizeKeyboard(true)->setOneTimeKeyboard(true);
-
-                            foreach($values as $value) {
-                                $reply_markup->row(
-                                    Keyboard::button([
-                                        'text' => $value,
-                                    ])
-                                );
-                            }
-                            Telegram::sendMessage([
-                                'chat_id' => $chat_id,
-                                'text' => $question->text,
-                                'reply_markup' => $reply_markup
-                            ]);
-                        break;
-                    }
-
-                } else {
-                    $resultMessage = "Вы ответили на все вопросы". "\n";
-                    foreach ($chat->messages as $message) {
-                        $resultMessage .= $message->text. ' - '. $message->pivot->answer."\n";
-                    }
+                if (!$validate->fails()) {
+                    $user->update($message);
                     Telegram::sendMessage([
                         'chat_id' => $chat_id,
-                        'text' => $resultMessage
+                        'text' => 'Ваш email записан'
                     ]);
+                } else {
+
+                    Telegram::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => implode("\n", $validate->errors()->all())
+                    ]);
+                    return;
                 }
             }
+
+
+            if ($message == '/addgroup')
+            {
+                $collection = collect(Telegram::getChatAdministrators(['chat_id' => $chat_id]));
+                if ($collection->contains(function ($value)
+                {
+                    return ($value->getUser()->getId() == config('telegram.bots.mybot.id') && $value->can_invite_users && $value->can_restrict_members);
+                }))
+                {
+                    $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
+
+                    if ($chat->wasRecentlyCreated) {
+                        Telegram::sendMessage([
+                            'chat_id' => $chat_id,
+                            'text' => "Чат добавлен"
+                        ]);
+                    } else {
+                        Telegram::sendMessage([
+                            'chat_id' => $chat_id,
+                            'text' => "Чат обновлен"
+                        ]);
+                        }
+                }
+                else {
+                    Telegram::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => "Создать чат не удалось"
+                    ]);
+                    }
+                }
         } catch (\Throwable $e) {
             logger()->info($e->getMessage());
         }
-
-        return 'ok';
     }
-
-    private function getMessage($updates) {
-        switch($updates->getMessage()->getText()) {
-            case 'Привет' :
-                return 'Привет '.$updates->getMessage()->getChat()->getFirstName();
-            case 'Как дела?' :
-                return 'У меня хорошо, у тебя как?';
-            case 'Что делаешь?' :
-                return 'Отвечаю тебе на вопросы';
-        }
-        return 'Я пока не знаю что сказать';
-    }
-
-    private function getRandomQuestion ($chat_id) {
-        return Message::whereDoesntHave('chats', function ($query) use ($chat_id) {
-            $query->where('telegram_chat_id', $chat_id);
-        })->inRandomOrder()->first();
-    }*/
 }
