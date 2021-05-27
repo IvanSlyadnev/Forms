@@ -20,11 +20,16 @@ class UserController extends Controller
     }
 
     public function add(User $user, Chat $chat) {
+
         $chat->users()->attach($user);
-        Telegram::unbanChatMember([
-            'chat_id' => $chat->telegram_chat_id,
-            'user_id' => $user->telegram_chat_id
-        ]);
+        try {
+            Telegram::unbanChatMember([
+                'chat_id' => $chat->telegram_chat_id,
+                'user_id' => $user->telegram_chat_id
+            ]);
+        } catch (\Throwable $e) {
+
+        }
 
 
         Telegram::sendMessage([

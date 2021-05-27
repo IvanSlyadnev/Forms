@@ -6,6 +6,7 @@ use App\Models\Chat;
 use App\Models\User;
 use App\Tables\ChatTable;
 use App\Tables\UserTable;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -32,7 +33,10 @@ class ChatController extends Controller
     {
         return view('chat/show', [
             'chat' => $chat,
-            'users' => User::whereDoesntHave('chats')->get(),
+            'users' => User::whereDoesntHave('chats',
+                function ($query) use($chat) {
+                    $query->where('chats.id', $chat->id);
+                })->get(),
             'table' => (new UserTable($chat))->setup()
         ]);
     }

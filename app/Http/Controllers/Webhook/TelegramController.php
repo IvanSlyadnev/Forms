@@ -28,6 +28,7 @@ class TelegramController extends Controller
 {
     public function  __invoke() {
         try {
+            logger()->info('work');
             $updates = Telegram::getWebhookUpdates();
             $message = $updates->getMessage()->getText();
             $chat_id = $updates->getMessage()->getChat()->getId();

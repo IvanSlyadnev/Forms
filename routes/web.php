@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\QuestionAnswerController;
 use App\Http\Controllers\QuestionController;
@@ -28,6 +29,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('chats', ChatController::class)->only('index', 'show');
     Route::resource('chats.users', UserController::class)->only('index', 'destroy');
+    Route::resource('groups', GroupController::class);
 });
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

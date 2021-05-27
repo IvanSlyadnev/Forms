@@ -44,6 +44,9 @@
                 <li>
                     <a href="{{route('chats.index')}}"><button class="btn btn-primary">Посмотреть чаты</button></a>
                 </li>
+                <li>
+                    <a href="{{route('groups.index')}}"><button class="btn btn-primary">Посмотреть групы</button></a>
+                </li>
                 @endif
             </ul>
 

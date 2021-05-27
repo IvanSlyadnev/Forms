@@ -12,8 +12,13 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public function chats() {
-        return $this->belongsToMany(Chat::class);
+        return $this->morphToMany(Chat::class, 'chatable');
     }
+
+    public function groups() {
+        return $this->belongsToMany(Group::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *

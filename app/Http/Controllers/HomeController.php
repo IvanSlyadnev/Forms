@@ -24,9 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $forms = Form::all();
-        return view('home', [
-            'forms' => $forms
-        ]);
+        return view('home');
     }
 }

@@ -18,8 +18,9 @@ class Chat extends Model
     ];
 
     public function users() {
-        return $this->belongsToMany(User::class);
+        return $this->morphedByMany(User::class, 'chatable');
     }
+
 
 
     public function getInviteLinkAttribute() {
