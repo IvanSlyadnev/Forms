@@ -43,6 +43,11 @@ class GroupTable extends AbstractTable
             $url = route('groups.show', $group);
             return "<a href = '{$url}'>{$group->name}</a>";
         });
+
+        $table->column()->html(function (Group $group) {
+           $url = route('chats.groups.show', $group->id);
+           return "<a href='{$url}'><button class='btn btn-group'>Посмотреть чаты</button><a>";
+        });
     }
 
     /**

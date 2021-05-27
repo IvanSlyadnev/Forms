@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ChatGroupController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LeadController;
@@ -32,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('chats.users', UserController::class)->only('index', 'destroy');
     Route::resource('groups', GroupController::class);
     Route::resource('groups.users',UserGroupController::class)->only('index', 'destroy');
+    Route::resource('groups.chats', ChatGroupController::class)->only('index', 'destroy');
 });
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -42,6 +44,10 @@ Route::get('forms/fill/{form}', [FormController::class, 'fill'])->name('forms.fi
 Route::post('user/add/{user}/{chat}', [UserController::class, 'add'])->name('user.add');
 
 Route::post('user/addInGroup/{user}/{group}', [UserGroupController::class, 'add'])->name('users.groups.add');
+
+Route::get('chats/showInGroup/{group}', [ChatGroupController::class, 'showInGroup'])->name('chats.groups.show');
+
+Route::post('chats/addInGroup/{chat}/{group}', [ChatGroupController::class, 'addInGroup'])->name('chats.groups.add');
 
 Route::get('/auth/redirect', function () {
     return Socialite::driver('telegram')->redirect();

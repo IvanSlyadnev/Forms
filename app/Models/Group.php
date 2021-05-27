@@ -17,5 +17,9 @@ class Group extends Model
         return $this->belongsToMany(User::class);
     }
 
+    public function chats() {
+        return $this->morphToMany(Chat::class, 'chatable');
+    }
+
 
 }

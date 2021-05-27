@@ -4,6 +4,7 @@
 @section('content')
 
     <div class="container">
+        <h1>Группы</h1>
         {{$table}}
     </div>
 
