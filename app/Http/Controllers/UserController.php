@@ -25,11 +25,11 @@ class UserController extends Controller
             'chat_id' => $chat->telegram_chat_id,
             'user_id' => $user->telegram_chat_id
         ]);
+
+
         Telegram::sendMessage([
             'chat_id' => $user->telegram_chat_id,
-            'text' => Telegram::exportChatInviteLink([
-                'chat_id' => $chat->telegram_chat_id
-            ])
+            'text' => $chat->invite_link
         ]);
 
         return redirect()->route('chats.show', $chat->id);

@@ -15,6 +15,7 @@ class CreateChatsTable extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
+            $table->string('invite_link')->nullable();
             $table->bigInteger('telegram_chat_id');
             $table->timestamps();
         });
