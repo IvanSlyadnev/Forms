@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\User;
 use App\Tables\GroupTable;
+use App\Tables\UserGroupTable;
+use App\Tables\UserTable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
@@ -49,9 +53,15 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Group $group)
     {
-
+        return view('group/show', [
+            'group' => $group,
+            'table' => (new UserGroupTable($group))->setup(),
+            'users' => User::whereDoesntHave('groups', function ($query) use ($group) {
+                $query->where('groups.id', $group->id);
+            })->get()
+        ]);
     }
 
     /**
