@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Telegram\Bot\Keyboard\Keyboard;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class User extends Authenticatable
 {
@@ -18,6 +20,37 @@ class User extends Authenticatable
     public function groups() {
         return $this->belongsToMany(Group::class);
     }
+
+    public function getAllChatsAttribute() {
+        return Chat::whereHas('groups', function ($query) {
+            $query->whereIn('groups.id', $this->groups()->pluck('id'));
+        })->orWhereHas('users', function ($query) {
+            $query->where('users.id', $this->id);
+        })->get()->map(function ($chat) {
+            return [
+                'chat' => $chat,
+                'consists' => $chat->isUserInChat($this)
+            ];
+        });
+    }
+
+    public function getChatsWhereNotConsistsAttribute () {
+
+        return $this->all_chats->filter(function ($value) {
+            try {
+                return in_array(Telegram::getChatMember([
+                        'chat_id' => $value->telegram_chat_id,
+                        'user_id' => $this->telegram_chat_id
+                    ])->status, ['left', 'kicked']);
+            } catch (\Throwable $e) {
+                return false;
+            }
+        });
+
+    }
+
+
+
 
     /**
      * The attributes that are mass assignable.

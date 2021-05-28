@@ -28,7 +28,6 @@ class TelegramController extends Controller
 {
     public function  __invoke() {
         try {
-            logger()->info('work');
             $updates = Telegram::getWebhookUpdates();
             $message = $updates->getMessage()->getText();
             $chat_id = $updates->getMessage()->getChat()->getId();
@@ -84,8 +83,24 @@ class TelegramController extends Controller
                         'chat_id' => $chat_id,
                         'text' => "Создать чат не удалось"
                     ]);
-                    }
                 }
+            } else if ($message == '/chats') {
+                $id = $updates->getMessage()->getFrom()->getId();
+                $user = User::where('telegram_chat_id', $id)->first();
+
+                $send_message = "";
+                foreach ($user->all_chats as $chat) {
+                    $send_message .= $chat['chat']->invite_link;
+                    if ($chat['consists']) $send_message .= ' Да';
+                    else $send_message .= ' Нет';
+                    $send_message.="\n";
+                }
+                Telegram::sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => $send_message
+                ]);
+            }
+
         } catch (\Throwable $e) {
             logger()->info($e->getMessage());
         }

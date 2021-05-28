@@ -25,6 +25,24 @@ class Chat extends Model
         return $this->morphedByMany(Group::class, 'chatable');
     }
 
+    public function getAllUsersAttribute () {
+        return User::whereHas('groups', function ($query) {
+           $query->whereIn('groups.id', $this->groups()->pluck('groups.id'));
+        })->orWhereHas('chats', function ($query) {
+            $query->where('chats.id', $this->id);
+        })->get();
+    }
+
+    public function isUserInChat(User $user) {
+        try {
+            return !in_array(Telegram::getChatMember([
+                'chat_id' => $this->telegram_chat_id,
+                'user_id' => $user->telegram_chat_id
+            ])->status, ['left', 'kicked']);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
 
     public function getInviteLinkAttribute() {
         if ($this->attributes['invite_link']) {
