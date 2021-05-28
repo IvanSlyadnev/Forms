@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Chat;
-$chat = Chat::find(1);
+use App\Models\User;
+$user = User::find(2);
 //dd($chat->all_users);
 //dd($user->all_chats);
 ?>

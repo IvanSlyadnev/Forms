@@ -4,12 +4,7 @@ namespace App\Http\Controllers\Webhook;
 
 use App\Enums\QuestionType;
 use App\Http\Controllers\Controller;
-use App\Models\Answer;
 use App\Models\Chat;
-use App\Models\Form;
-use App\Models\Lead;
-use App\Models\Message;
-use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -55,51 +50,50 @@ class TelegramController extends Controller
                 }
             }
 
-
-            if ($message == '/addgroup')
-            {
-                $collection = collect(Telegram::getChatAdministrators(['chat_id' => $chat_id]));
-                if ($collection->contains(function ($value)
-                {
-                    return ($value->getUser()->getId() == config('telegram.bots.mybot.id') && $value->can_invite_users && $value->can_restrict_members);
-                }))
-                {
-                    $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id]);
-
-                    if ($chat->wasRecentlyCreated) {
-                        Telegram::sendMessage([
-                            'chat_id' => $chat_id,
-                            'text' => "Чат добавлен"
-                        ]);
-                    } else {
-                        Telegram::sendMessage([
-                            'chat_id' => $chat_id,
-                            'text' => "Чат обновлен"
-                        ]);
+            switch ($message) {
+                case '/addgroup' :
+                    $collection = collect(Telegram::getChatAdministrators(['chat_id' => $chat_id]));
+                    if ($collection->contains(function ($value)
+                    {
+                        return ($value->getUser()->getId() == config('telegram.bots.mybot.id') && $value->can_invite_users && $value->can_restrict_members);
+                    }))
+                    {
+                        $chat = Chat::updateOrCreate(['telegram_chat_id' => $chat_id],[ 'name' => $updates->getMessage()->getChat()->getTitle()]);
+                        if ($chat->wasRecentlyCreated) {
+                            Telegram::sendMessage([
+                                'chat_id' => $chat_id,
+                                'text' => "Чат добавлен"
+                            ]);
+                        } else {
+                            Telegram::sendMessage([
+                                'chat_id' => $chat_id,
+                                'text' => "Чат обновлен"
+                            ]);
                         }
-                }
-                else {
+                    }
+                    else {
+                        Telegram::sendMessage([
+                            'chat_id' => $chat_id,
+                            'text' => "Создать чат не удалось"
+                        ]);
+                    }
+                    break;
+                case '/chats' :
+                    $user = User::where('telegram_chat_id', $updates->getMessage()->getFrom()->getId())->first();
+                    $send_message = "";
+                    foreach ($user->all_chats as $chat) {
+                        $send_message .= $chat['chat']->invite_link. ' ';
+                        if ($chat['chat']->name) $send_message .= $chat['chat']->name. ' ';
+                        $send_message .= $chat['consists'] ? ' Да' : ' Нет';
+                        $send_message .= "\n";
+                    }
                     Telegram::sendMessage([
                         'chat_id' => $chat_id,
-                        'text' => "Создать чат не удалось"
+                        'text' => $send_message
                     ]);
-                }
-            } else if ($message == '/chats') {
-                $id = $updates->getMessage()->getFrom()->getId();
-                $user = User::where('telegram_chat_id', $id)->first();
-
-                $send_message = "";
-                foreach ($user->all_chats as $chat) {
-                    $send_message .= $chat['chat']->invite_link;
-                    if ($chat['consists']) $send_message .= ' Да';
-                    else $send_message .= ' Нет';
-                    $send_message.="\n";
-                }
-                Telegram::sendMessage([
-                    'chat_id' => $chat_id,
-                    'text' => $send_message
-                ]);
+                    break;
             }
+
 
         } catch (\Throwable $e) {
             logger()->info($e->getMessage());

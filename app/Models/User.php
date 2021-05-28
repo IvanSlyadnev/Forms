@@ -13,6 +13,10 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    public function delete() {
+        dd(1);
+    }
+
     public function chats() {
         return $this->morphToMany(Chat::class, 'chatable');
     }
@@ -26,7 +30,7 @@ class User extends Authenticatable
             $query->whereIn('groups.id', $this->groups()->pluck('id'));
         })->orWhereHas('users', function ($query) {
             $query->where('users.id', $this->id);
-        })->get()->map(function ($chat) {
+        })->orWhere('chats.is_public', 1)->get()->map(function ($chat) {
             return [
                 'chat' => $chat,
                 'consists' => $chat->isUserInChat($this)

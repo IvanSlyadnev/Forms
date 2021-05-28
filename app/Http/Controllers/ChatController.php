@@ -43,4 +43,9 @@ class ChatController extends Controller
         ]);
     }
 
+    public function makePublic(Request $request, Chat $chat) {
+        $chat->update(['is_public' => $request->is_public]);
+        return redirect()->route('chats.show', $chat);
+    }
+
 }

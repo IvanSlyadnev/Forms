@@ -2,11 +2,11 @@
 
 namespace App\Tables;
 
-use App\Models\Chat;
+use App\Models\User;
 use Okipa\LaravelTable\Abstracts\AbstractTable;
 use Okipa\LaravelTable\Table;
 
-class ChatTable extends AbstractTable
+class UsersListTable extends AbstractTable
 {
     /**
      * Configure the table itself.
@@ -16,14 +16,14 @@ class ChatTable extends AbstractTable
      */
     protected function table(): Table
     {
-        return (new Table())->model(Chat::class)
+        return (new Table())->model(User::class)
             ->routes([
-                'index'   => ['name' => 'chats.index'],
-                'show'    => ['name' => 'chats.show']
+                'index'   => ['name' => 'users.index'],
+                'destroy' => ['name' => 'users.destroy']
             ])
-            ->destroyConfirmationHtmlAttributes(fn(Chat $chat) => [
+            ->destroyConfirmationHtmlAttributes(fn(User $user) => [
                 'data-confirm' => __('Are you sure you want to delete the entry :entry?', [
-                    'entry' => $chat->database_attribute,
+                    'entry' => $user->database_attribute,
                 ]),
             ]);
     }
@@ -37,11 +37,7 @@ class ChatTable extends AbstractTable
      */
     protected function columns(Table $table): void
     {
-        $table->column()->html(function (Chat $chat) {
-            $url = route('chats.show', $chat->id);
-            if ($chat->name) return "<a href='{$url}'>{$chat->name}</a>";
-            else return "<a href='{$url}'>{$chat->id}</a>";
-        });
+        $table->column('name');
     }
 
     /**

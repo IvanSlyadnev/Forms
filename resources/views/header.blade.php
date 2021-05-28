@@ -47,6 +47,9 @@
                 <li>
                     <a href="{{route('groups.index')}}"><button class="btn btn-primary">Посмотреть групы</button></a>
                 </li>
+                <li>
+                    <a href="{{route('users.index')}}"><button class="btn btn-primary">Посмотреть всех пользователей</button></a>
+                </li>
                 @endif
             </ul>
 

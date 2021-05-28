@@ -14,7 +14,9 @@ class Chat extends Model
         'telegram_chat_id',
         'current_message_id',
         'email',
-        'invite_link'
+        'invite_link',
+        'name',
+        'is_public'
     ];
 
     public function users() {

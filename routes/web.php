@@ -11,6 +11,7 @@ use App\Http\Controllers\QuestionController;
 use \App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserGroupController;
+use App\Http\Controllers\UserListController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('groups', GroupController::class);
     Route::resource('groups.users',UserGroupController::class)->only('index', 'destroy');
     Route::resource('groups.chats', ChatGroupController::class)->only('index', 'destroy');
+    Route::resource('users', UserListController::class)->only('index', 'destroy');
 });
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -48,6 +50,8 @@ Route::post('user/addInGroup/{user}/{group}', [UserGroupController::class, 'add'
 Route::get('chats/showInGroup/{group}', [ChatGroupController::class, 'showInGroup'])->name('chats.groups.show');
 
 Route::post('chats/addInGroup/{chat}/{group}', [ChatGroupController::class, 'addInGroup'])->name('chats.groups.add');
+
+Route::post('chats/make_public/{chat}', [ChatController::class, 'makePublic'])->name('chats.make_public');
 
 Route::get('/auth/redirect', function () {
     return Socialite::driver('telegram')->redirect();
