@@ -13,9 +13,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    public function delete() {
-        dd(1);
-    }
 
     public function chats() {
         return $this->morphToMany(Chat::class, 'chatable');

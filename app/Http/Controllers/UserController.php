@@ -22,31 +22,34 @@ class UserController extends Controller
 
     public function add(User $user, Chat $chat) {
 
-        $chat->users()->attach($user);
+        if (!$chat->users->contains($user)) $chat->users()->attach($user);
         try {
             Telegram::unbanChatMember([
                 'chat_id' => $chat->telegram_chat_id,
                 'user_id' => $user->telegram_chat_id
             ]);
+
+            Telegram::sendMessage([
+                'chat_id' => $user->telegram_chat_id,
+                'text' => $chat->invite_link
+            ]);
         } catch (\Throwable $e) {
 
         }
-
-
-        Telegram::sendMessage([
-            'chat_id' => $user->telegram_chat_id,
-            'text' => $chat->invite_link
-        ]);
 
         return redirect()->route('chats.show', $chat->id);
     }
 
     public function destroy(Chat $chat, User $user) {
         $chat->users()->detach($user);
-        Telegram::kickChatMember([
-            'chat_id' => $chat->telegram_chat_id,
-            'user_id' => $user->telegram_chat_id
-        ]);
+        try {
+            Telegram::kickChatMember([
+                'chat_id' => $chat->telegram_chat_id,
+                'user_id' => $user->telegram_chat_id
+            ]);
+        } catch (\Throwable $e) {
+
+        }
         return redirect()->route('chats.show', $chat->id);
     }
 }

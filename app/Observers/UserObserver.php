@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Models\Chat;
 use App\Models\User;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class UserObserver
 {
@@ -14,17 +16,22 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        dd($user->name);//не работает
+        $chats = Chat::all();
+
+        $chats->each(function ($chat) use ($user) {
+            {
+                try {
+                    $chat->users()->detach($user);
+                    Telegram::kickChatMember([
+                        'chat_id' => $chat->telegram_chat_id,
+                        'user_id' => $user->telegram_chat_id
+                    ]);
+                } catch (\Throwable $e) {
+                    logger()->info($e->getMessage());
+                }
+            }
+        });
+        return redirect()->route('users.index');
     }
 
-    /**
-     * Handle the User "force deleted" event.
-     *
-     * @param  \App\Models\User  $user
-     * @return void
-     */
-    public function forceDeleted(User $user)
-    {
-        dd($user->name);// не работает
-    }
 }

@@ -31,24 +31,6 @@ class UserListController extends Controller
      */
     public function destroy(User $user)
     {
-        $chats = Chat::all();
-
-        /*$chats->each(function ($chat) use ($user) {
-            {
-                try {
-                    $chat->users()->detach($user);
-                } catch (\Throwable $e) {
-                    logger()->info($e->getMessage());
-                }
-                Telegram::kickChatMember([
-                    'chat_id' => $chat->telegram_chat_id,
-                    'user_id' => $user->telegram_chat_id
-                ]);
-            }
-        });
-        $user->delete();*/
-
-        //
-        return redirect()->route('users.index');
+        $user->delete();
     }
 }

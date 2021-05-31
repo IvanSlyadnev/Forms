@@ -26,8 +26,34 @@ class TelegramController extends Controller
             $updates = Telegram::getWebhookUpdates();
             $message = $updates->getMessage()->getText();
             $chat_id = $updates->getMessage()->getChat()->getId();
-
             $user = User::where('telegram_chat_id', $chat_id)->first();
+
+            $members = $updates->getMessage()->getNewChatMembers();
+
+            if ($updates->getMessage()->getLeftChatMember() && $updates->getMessage()->getFrom()->getIsBot()) {
+                Telegram::deleteMessage([
+                    'chat_id' => $chat_id,
+                    'message_id' => $updates->getMessage()->getMessageId()
+                ]);
+            }
+            if ($members) {
+                $chat = Chat::where('telegram_chat_id', $chat_id)->first();
+                foreach ($members as $member) {
+
+                    if (!$chat->all_users->pluck('telegram_chat_id')->contains($member['id'])) {
+
+                        Telegram::kickChatMember([
+                            'chat_id' => $chat->telegram_chat_id,
+                            'user_id' => $member['id']
+                        ]);
+
+                        Telegram::deleteMessage([
+                            'chat_id' => $chat_id,
+                            'message_id' => $updates->getMessage()->message_id
+                        ]);
+                    }
+                }
+            }
 
             if ($user && !$user->email) {
                 $message = ['email' => $updates->getMessage()->getText()];
